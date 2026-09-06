@@ -43,9 +43,16 @@
     ));
   }
 
+  async function waitForLeaflet() {
+    const started = Date.now();
+    while (!window.L && Date.now() - started < 8000) await new Promise(r => setTimeout(r, 100));
+    return window.L;
+  }
+
   async function init() {
     const host = $('.hero-visual');
-    if (!host || !window.L) return;
+    const L = await waitForLeaflet();
+    if (!host || !L) return;
     await new Promise(r => setTimeout(r, 80));
 
     // live-core creates the first map; replace only the home visual with the
