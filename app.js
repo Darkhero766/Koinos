@@ -8,9 +8,16 @@ const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.queryS
   const closeReport=()=>{if(!modal)return;modal.hidden=true;document.body.style.overflow='';};
   $$('.report-trigger').forEach(b=>b.addEventListener('click',openReport));$('.modal-close')?.addEventListener('click',closeReport);modal?.addEventListener('click',e=>{if(e.target===modal)closeReport();});
   $$('.modal-next').forEach(b=>b.addEventListener('click',()=>{if(currentStep<4)renderStep(currentStep+1);}));
-  const photo=$('#photo-upload');if(photo){photo.accept='image/*';photo.setAttribute('capture','environment');}
-  $('#take-photo')?.addEventListener('click',()=>photo?.click());
-  photo?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;if($('#file-name'))$('#file-name').textContent=f.name;if($('#take-photo'))$('#take-photo').textContent='Change photo';});
+  // Photo picker: deliberately do NOT use the capture attribute here. On iOS/Android,
+  // capture="environment" forces the camera and prevents the normal Files/Photos picker.
+  const photo=$('#photo-upload');
+  if(photo){
+    photo.accept='image/*';
+    photo.removeAttribute('capture');
+    photo.removeAttribute('capturemode');
+  }
+  $('#take-photo')?.addEventListener('click',e=>{e.preventDefault();photo?.click();});
+  photo?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;if(!f.type.startsWith('image/')){toast('Please choose an image file.');e.target.value='';return;}if(f.size>4*1024*1024){toast('That image is over 4 MB. Please choose a smaller photo.');e.target.value='';return;}if($('#file-name'))$('#file-name').textContent=f.name;if($('#take-photo'))$('#take-photo').textContent='Change photo';});
   $$('[data-suggestion]').forEach(b=>b.addEventListener('click',()=>{const input=$('#report-description');if(!input)return;input.value=`${input.value?input.value+' ':''}${b.dataset.suggestion}.`;input.focus();}));
   const saveReport=async()=>{if(!window.KOINOS_LIVE?.submitReport){toast('Report service is loading — try again in a moment.');return null;}const result=await window.KOINOS_LIVE.submitReport();if(!result){toast('We could not save the report. Check your connection and try again.');return null;}return result;};
   $('.join-issue-button')?.addEventListener('click',async()=>{const result=await saveReport();if(!result)return;if(result.communityMatch&&result.similarIssues?.length){$$('.report-step').forEach(x=>x.classList.remove('active'));$('#modal-success')?.classList.add('show');toast(`Found ${result.similarIssues.length} nearby report${result.similarIssues.length===1?'':'s'} — your report is now connected.`);}else{$$('.report-step').forEach(x=>x.classList.remove('active'));$('#modal-success')?.classList.add('show');toast('Your report is now part of the community record.');}});
