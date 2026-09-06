@@ -33,12 +33,46 @@ create table if not exists public.issue_votes (
   device_id text not null, created_at timestamptz not null default now(), primary key(issue_id, device_id)
 );
 
+-- Authority roles. Promote trusted staff by changing profiles.role to 'authority'
+-- in Supabase SQL Editor; do not expose role editing to the browser.
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  display_name text,
+  role text not null default 'citizen' check (role in ('citizen','authority')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create or replace function public.handle_koinos_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  insert into public.profiles(id, display_name)
+  values (new.id, coalesce(new.raw_user_meta_data ->> 'display_name', split_part(new.email, '@', 1)))
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_koinos_auth_user_created on auth.users;
+create trigger on_koinos_auth_user_created
+after insert on auth.users
+for each row execute procedure public.handle_koinos_new_user();
+
+alter table public.profiles enable row level security;
+drop policy if exists "KOINOS profile self read" on public.profiles;
+create policy "KOINOS profile self read" on public.profiles for select to authenticated using ((select auth.uid()) = id);
+
+grant select on table public.profiles to authenticated;
+
 -- Supabase projects created with the newer Data API settings may require explicit grants.
 revoke all on table public.issues, public.issue_events, public.issue_votes from anon, authenticated;
 grant select, insert on table public.issues to anon, authenticated;
 grant select, insert on table public.issue_events to anon, authenticated;
 grant usage, select on sequence public.issue_events_id_seq to anon, authenticated;
--- Voting is intentionally performed only through the security-definer RPC below.
 
 alter table public.issues enable row level security;
 alter table public.issue_events enable row level security;
@@ -77,3 +111,32 @@ begin
     'createdAt',item.created_at,'updatedAt',item.updated_at,'alreadyVoted',not changed);
 end; $$;
 grant execute on function public.koinos_upvote_issue(text,text) to anon, authenticated;
+
+-- Only an authority can change a civic issue's workflow status.
+create or replace function public.koinos_authority_update_issue(p_issue_id text, p_status text, p_note text default '')
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare item public.issues;
+begin
+  if not exists (select 1 from public.profiles where id = (select auth.uid()) and role = 'authority') then
+    raise exception 'Authority access required';
+  end if;
+  if p_status not in ('reported','in_progress','resolved') then raise exception 'Invalid status'; end if;
+  update public.issues
+  set status = p_status, updated_at = now()
+  where id = p_issue_id
+  returning * into item;
+  if not found then raise exception 'Issue not found'; end if;
+  insert into public.issue_events(issue_id, status, note)
+  values (item.id, item.status, nullif(left(coalesce(p_note,''),500),''));
+  return jsonb_build_object('id',item.id,'title',item.title,'category',item.category,'description',item.description,
+    'locationLabel',item.location_label,'latitude',item.latitude,'longitude',item.longitude,'photoUrl',item.photo_url,
+    'anonymous',item.anonymous,'status',item.status,'severity',item.severity,'priority',item.priority,'upvotes',item.upvotes,
+    'createdAt',item.created_at,'updatedAt',item.updated_at);
+end;
+$$;
+revoke execute on function public.koinos_authority_update_issue(text,text,text) from public, anon;
+grant execute on function public.koinos_authority_update_issue(text,text,text) to authenticated;
