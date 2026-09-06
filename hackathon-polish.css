@@ -44,3 +44,34 @@ body{background:var(--k-paper);text-rendering:optimizeLegibility;-webkit-font-sm
   .section-pad{padding:4.5rem 5vw}.site-header{padding:0 4vw}.wordmark{font-size:13px}.header-actions .report-trigger{font-size:10px;padding:11px 12px}.button-plus{font-size:17px}.hero{min-height:auto;padding-top:3.8rem}.hero h1{font-size:clamp(3.65rem,18vw,5.5rem)}.hero-visual{min-height:390px;border-radius:14px}.map-topline .mono{display:none}.map-label{font-size:15px}.pulse-grid{grid-template-columns:1fr}.pulse-card-tall{grid-row:auto}.pulse-card-tall .card-image{min-height:330px}.card-image{min-height:230px}.pulse-transition{margin:4rem 0 0}.pulse-transition .line{display:none}.pulse-transition p{min-width:0}.merge-section{padding-bottom:5rem}.merge-stage{margin-top:3.2rem}.report-stream{width:100%}.person-row{justify-content:center}.shared-issue{padding:16px}.stats-strip{grid-template-columns:1fr 1fr;gap:18px}.report-callout{padding:25px}.report-callout h3{font-size:29px}.steps-row{grid-template-columns:1fr 1fr}.step{padding:15px 0}.big-map{min-height:470px}.map-neighborhood{font-size:14px}.map-zoom{right:12px;bottom:12px}.filter-row{gap:7px}.issue-panel-heading{flex-direction:column;align-items:flex-start;gap:7px}.issue-metrics{gap:10px}.issue-metrics strong{font-size:25px}.community-visual{min-height:320px}.orbit-1{width:260px!important;height:260px!important}.orbit-2{width:190px!important;height:190px!important}.priority-card{padding:15px}.score-number{font-size:72px}.final-cta h2{font-size:clamp(3rem,15vw,5rem)}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.map-marker,.big-marker{animation:none!important}.koinos-reveal{opacity:1;transform:none;transition:none}.pulse-card,.selected-issue,.priority-card,.button{transition:none}}
+
+/* Quick-report QR */
+.qr-trigger{display:inline-flex;align-items:center;gap:6px}
+.qr-modal{background:var(--k-paper);border-radius:20px;max-width:420px;width:92vw;margin:auto;padding:34px 30px;text-align:center;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.28)}
+.qr-modal .modal-close{position:absolute;top:14px;right:16px}
+.qr-code-frame{background:#fff;border:1px solid var(--k-line);border-radius:14px;padding:16px;display:inline-flex;margin:18px 0}
+.qr-code-frame img{display:block;width:200px;height:200px}
+.qr-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* Anonymous reporting toggle */
+.anon-toggle{display:flex;align-items:center;gap:12px;margin:18px 0 22px;cursor:pointer;text-align:left}
+.anon-toggle-track{width:40px;height:23px;border-radius:999px;background:rgba(23,25,22,.16);position:relative;flex:none;transition:background .2s ease}
+.anon-toggle-thumb{position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:transform .2s ease}
+.anon-toggle input{position:absolute;opacity:0;width:1px;height:1px}
+.anon-toggle input:checked+.anon-toggle-track{background:var(--k-ink)}
+.anon-toggle input:checked+.anon-toggle-track .anon-toggle-thumb{transform:translateX(17px)}
+.anon-toggle-copy small{display:block;color:var(--k-muted);font-weight:500;margin-top:2px}
+
+/* Analytics dashboard for authorities */
+.analytics-board{margin-top:22px;background:#e9e6de;border-radius:18px;padding:26px 26px 28px;border:1px solid rgba(23,25,22,.08)}
+.analytics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 22px}
+.analytics-stat{background:var(--k-paper);border-radius:14px;padding:16px 14px;text-align:center;border:1px solid rgba(23,25,22,.06)}
+.analytics-stat strong{display:block;font-size:32px;font-weight:800;letter-spacing:-.02em}
+.analytics-stat span{font-size:12px;color:var(--k-muted);font-weight:600}
+.analytics-breakdown{display:grid;gap:10px;margin-bottom:18px}
+.analytics-breakdown div{display:grid;grid-template-columns:100px 30px 1fr;align-items:center;gap:10px;font-size:12px;font-weight:700}
+.analytics-breakdown i{height:7px;border-radius:999px;background:rgba(23,25,22,.1);overflow:hidden;display:block}
+.analytics-breakdown em{display:block;height:100%;background:var(--k-ink);border-radius:999px}
+.analytics-note{font-size:13px;color:var(--k-muted);line-height:1.5;margin:0}
+.analytics-note em{color:var(--k-ink);font-style:normal}
+@media (max-width:600px){.analytics-grid{grid-template-columns:1fr 1fr}.analytics-breakdown div{grid-template-columns:80px 26px 1fr}}

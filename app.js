@@ -254,3 +254,105 @@ $(".demo-button")?.addEventListener("click", () => {
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && modal && !modal.hidden) closeModal();
 });
+
+// Quick-report QR modal: lets a printed sign or noticeboard link straight into the report flow.
+const qrModal = $("#qr-modal");
+const buildQrUrl = () => {
+  const target = `${window.location.origin}${window.location.pathname}#report`;
+  const params = new URLSearchParams({ size: "220x220", data: target, margin: "8" });
+  return { image: `https://api.qrserver.com/v1/create-qr-code/?${params.toString()}`, target };
+};
+const openQrModal = () => {
+  if (!qrModal) return;
+  const { image, target } = buildQrUrl();
+  const img = $("#qr-code-image");
+  if (img) img.src = image;
+  const download = $("#qr-download");
+  if (download) download.href = image;
+  qrModal.dataset.link = target;
+  qrModal.hidden = false;
+  document.body.style.overflow = "hidden";
+};
+const closeQrModal = () => {
+  if (!qrModal) return;
+  qrModal.hidden = true;
+  document.body.style.overflow = "";
+};
+$(".qr-trigger")?.addEventListener("click", openQrModal);
+qrModal?.querySelector(".modal-close")?.addEventListener("click", closeQrModal);
+qrModal?.addEventListener("click", (event) => { if (event.target === qrModal) closeQrModal(); });
+$("#qr-copy-link")?.addEventListener("click", async () => {
+  const link = qrModal?.dataset.link || "";
+  try {
+    await navigator.clipboard.writeText(link);
+    toast("Quick-report link copied.");
+  } catch {
+    toast(link);
+  }
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && qrModal && !qrModal.hidden) closeQrModal();
+});
+
+// Anonymous reporting: keeps the reporter's identity out of the community-facing copy.
+const anonymousToggle = $("#anonymous-toggle");
+const isAnonymous = () => Boolean(anonymousToggle?.checked);
+const successCopy = $("#modal-success p");
+const successCopyDefault = successCopy?.textContent;
+$$(".modal-next, .join-issue-button").forEach((button) => button.addEventListener("click", () => {
+  if (!successCopy || !successCopyDefault) return;
+  successCopy.textContent = isAnonymous()
+    ? "Your anonymous report joined 37 others. KOINOS will keep the thread posted without sharing who reported it."
+    : successCopyDefault;
+}));
+
+// Analytics dashboard: numbers count up once they're on screen, like a real reporting dashboard.
+(() => {
+  const stats = $$(".analytics-stat strong[data-count-to]");
+  if (!stats.length) return;
+  const animate = (node) => {
+    const target = Number(node.dataset.countTo || 0);
+    const suffix = node.dataset.suffix || "";
+    const duration = 900;
+    const start = performance.now();
+    const step = (now) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      node.textContent = `${Math.round(target * eased)}${suffix}`;
+      if (progress < 1) requestAnimationFrame(step);
+      else node.textContent = `${target}${suffix}`;
+    };
+    requestAnimationFrame(step);
+  };
+  if (!('IntersectionObserver' in window)) { stats.forEach(animate); return; }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) { animate(entry.target); observer.unobserve(entry.target); }
+    });
+  }, { threshold: 0.4 });
+  stats.forEach((node) => observer.observe(node));
+})();
+
+// Optional backend integration: if a KOINOS API is configured, mirror new reports to it.
+// The demo works fully offline without this — see /server for the reference Express API.
+window.KOINOS_API_BASE = window.KOINOS_API_BASE || null;
+const submitToBackend = async (payload) => {
+  if (!window.KOINOS_API_BASE) return;
+  try {
+    await fetch(`${window.KOINOS_API_BASE}/api/issues`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  } catch {
+    // Backend is optional for the demo; fail silently and keep the front-end flow uninterrupted.
+  }
+};
+$$(".join-issue-button, .separate-button").forEach((button) => button.addEventListener("click", () => {
+  submitToBackend({
+    description: $("#report-description")?.value || "",
+    anonymous: isAnonymous(),
+    category: "unclassified",
+    createdAt: new Date().toISOString()
+  });
+}));
