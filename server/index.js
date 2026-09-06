@@ -1,144 +1,44 @@
-// KOINOS reference backend — a small, dependency-light Express API that demonstrates
-// the "Backend APIs" skill required by the Community Connect problem statement.
-// It is intentionally separate from the static front-end deploy (index.html/app.js),
-// which keeps working on its own with in-memory demo data if this server isn't running.
-//
-// Run it:
-//   cd server && npm install && npm start
-// It listens on PORT (default 4000) and stores data in ./data/issues.json.
+import express from 'express';
+import cors from 'cors';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import pg from 'pg';
 
-import express from "express";
-import cors from "cors";
-import fs from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { nanoid } from "nanoid";
-
+const { Pool } = pg;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_FILE = path.join(__dirname, "data", "issues.json");
-const PORT = process.env.PORT || 4000;
-
+const PORT = Number(process.env.PORT || 4000);
+const DATABASE_URL = process.env.DATABASE_URL;
+const ADMIN_KEY = process.env.ADMIN_KEY || '';
+const pool = DATABASE_URL ? new Pool({ connectionString: DATABASE_URL, ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false }) : null;
 const app = express();
-app.use(cors());
-app.use(express.json({ limit: "8mb" })); // generous limit so a base64 report photo can ride along
+app.use(cors({ origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : '*' }));
+app.use(express.json({ limit: '2mb' }));
 
-const readIssues = async () => JSON.parse(await fs.readFile(DATA_FILE, "utf-8"));
-const writeIssues = async (issues) => fs.writeFile(DATA_FILE, JSON.stringify(issues, null, 2));
-
-// --- Bonus feature: lightweight severity prediction -----------------------------------
-// Heuristic keyword scoring rather than a trained model — transparent and fast, and easy
-// to swap out for a real ML/LLM call later without changing the API shape.
-const SEVERITY_KEYWORDS = {
-  high: ["danger", "unsafe", "accident", "injur", "flood", "collapse", "exposed wire", "fire", "school"],
-  medium: ["block", "leak", "overflow", "broken", "damaged", "pothole"],
+const fallbackFile = path.join(__dirname, 'data', 'issues.json');
+const ensureFallback = async () => { try { await fs.access(fallbackFile); } catch { await fs.mkdir(path.dirname(fallbackFile), { recursive: true }); await fs.writeFile(fallbackFile, '[]'); } };
+const initDb = async () => {
+  if (!pool) return;
+  await pool.query(`CREATE TABLE IF NOT EXISTS issues (id TEXT PRIMARY KEY,title TEXT NOT NULL,category TEXT NOT NULL DEFAULT 'other',description TEXT NOT NULL DEFAULT '',location_label TEXT,latitude DOUBLE PRECISION,longitude DOUBLE PRECISION,photo_url TEXT,anonymous BOOLEAN NOT NULL DEFAULT false,status TEXT NOT NULL DEFAULT 'reported',severity TEXT NOT NULL DEFAULT 'low',priority INTEGER NOT NULL DEFAULT 0,upvotes INTEGER NOT NULL DEFAULT 0,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE INDEX IF NOT EXISTS issues_geo_idx ON issues(latitude,longitude); CREATE INDEX IF NOT EXISTS issues_status_idx ON issues(status); CREATE TABLE IF NOT EXISTS issue_votes(issue_id TEXT NOT NULL REFERENCES issues(id) ON DELETE CASCADE,device_id TEXT NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),PRIMARY KEY(issue_id,device_id)); CREATE TABLE IF NOT EXISTS issue_events(id BIGSERIAL PRIMARY KEY,issue_id TEXT NOT NULL REFERENCES issues(id) ON DELETE CASCADE,status TEXT NOT NULL,note TEXT,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());`);
 };
-function predictSeverity(description = "") {
-  const text = description.toLowerCase();
-  if (SEVERITY_KEYWORDS.high.some((word) => text.includes(word))) return "high";
-  if (SEVERITY_KEYWORDS.medium.some((word) => text.includes(word))) return "medium";
-  return "low";
-}
+const severity = (text='') => { const t=text.toLowerCase(); if(/school|hospital|accident|injur|fire|flood|collapse|exposed wire|danger|unsafe/.test(t)) return 'high'; if(/pothole|leak|overflow|broken|damaged|blocked|garbage/.test(t)) return 'medium'; return 'low'; };
+const priority = (s,votes) => Math.min(100,(s==='high'?55:s==='medium'?40:25)+Math.min(30,votes)+15);
+const normalize = r => ({id:r.id,title:r.title,category:r.category,description:r.description,locationLabel:r.location_label,latitude:r.latitude,longitude:r.longitude,photoUrl:r.photo_url,anonymous:r.anonymous,status:r.status,severity:r.severity,priority:r.priority,upvotes:r.upvotes,createdAt:r.created_at,updatedAt:r.updated_at});
+const readFallback=async()=>{await ensureFallback();return JSON.parse(await fs.readFile(fallbackFile,'utf8'));};
+const writeFallback=x=>fs.writeFile(fallbackFile,JSON.stringify(x,null,2));
+const authAdmin=(req,res)=>{if(ADMIN_KEY&&req.get('x-admin-key')!==ADMIN_KEY){res.status(401).json({error:'Admin key required'});return false;}return true;};
 
-// --- Bonus feature: AI-generated-style summary -----------------------------------------
-// A short, deterministic extractive summary. Swap the body of this function for a call to
-// an LLM provider to get true generative summaries without touching any route below.
-function summarize(issue) {
-  const place = issue.location?.label ? ` near ${issue.location.label}` : "";
-  return `${issue.title}${place}. Reported ${issue.anonymous ? "anonymously" : "by a community member"}, ` +
-    `flagged as ${issue.severity} severity with ${issue.upvotes} neighbor${issue.upvotes === 1 ? "" : "s"} affected.`;
-}
-
-// GET /api/issues — list all issues, newest first
-app.get("/api/issues", async (_req, res) => {
-  const issues = await readIssues();
-  res.json(issues.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+app.get('/api/health',async(_req,res)=>res.json({ok:true,database:Boolean(pool),service:'koinos-api'}));
+app.get('/api/issues',async(req,res)=>{
+  const {lat,lng,radiusKm=12}=req.query;
+  if(pool){const values=[];let where='';if(Number.isFinite(Number(lat))&&Number.isFinite(Number(lng))){values.push(Number(lat),Number(lng),Number(radiusKm));where=`WHERE latitude IS NOT NULL AND longitude IS NOT NULL AND (6371*acos(LEAST(1,cos(radians($1))*cos(radians(latitude))*cos(radians(longitude)-radians($2))+sin(radians($1))*sin(radians(latitude))))) <= $3`; }const r=await pool.query(`SELECT * FROM issues ${where} ORDER BY priority DESC,created_at DESC LIMIT 200`,values);return res.json(r.rows.map(normalize));}
+  res.json((await readFallback()).sort((a,b)=>(b.priority||0)-(a.priority||0)));
 });
-
-// GET /api/issues/:id
-app.get("/api/issues/:id", async (req, res) => {
-  const issues = await readIssues();
-  const issue = issues.find((item) => item.id === req.params.id);
-  if (!issue) return res.status(404).json({ error: "Issue not found" });
-  res.json({ ...issue, aiSummary: summarize(issue) });
-});
-
-// POST /api/issues — report a new civic issue
-app.post("/api/issues", async (req, res) => {
-  const { title, category, description, location, photoUrl, anonymous } = req.body || {};
-  if (!description && !title) {
-    return res.status(400).json({ error: "A title or description is required" });
-  }
-  const issues = await readIssues();
-  const now = new Date().toISOString();
-  const issue = {
-    id: nanoid(10),
-    title: title || "Untitled report",
-    category: category || "unclassified",
-    description: description || "",
-    location: location || null,
-    photoUrl: photoUrl || null,
-    anonymous: Boolean(anonymous),
-    status: "reported",
-    severity: predictSeverity(description),
-    upvotes: 0,
-    createdAt: now,
-    updatedAt: now,
-  };
-  issues.push(issue);
-  await writeIssues(issues);
-  res.status(201).json({ ...issue, aiSummary: summarize(issue) });
-});
-
-// POST /api/issues/:id/upvote — "I'm affected too"
-app.post("/api/issues/:id/upvote", async (req, res) => {
-  const issues = await readIssues();
-  const issue = issues.find((item) => item.id === req.params.id);
-  if (!issue) return res.status(404).json({ error: "Issue not found" });
-  issue.upvotes += 1;
-  issue.updatedAt = new Date().toISOString();
-  await writeIssues(issues);
-  res.json(issue);
-});
-
-// PATCH /api/issues/:id/status — Reported -> In Progress -> Resolved
-const VALID_STATUSES = ["reported", "in_progress", "resolved"];
-app.patch("/api/issues/:id/status", async (req, res) => {
-  const { status } = req.body || {};
-  if (!VALID_STATUSES.includes(status)) {
-    return res.status(400).json({ error: `status must be one of ${VALID_STATUSES.join(", ")}` });
-  }
-  const issues = await readIssues();
-  const issue = issues.find((item) => item.id === req.params.id);
-  if (!issue) return res.status(404).json({ error: "Issue not found" });
-  issue.status = status;
-  issue.updatedAt = new Date().toISOString();
-  await writeIssues(issues);
-  res.json(issue);
-});
-
-// GET /api/analytics — aggregated numbers for the authority dashboard
-app.get("/api/analytics", async (_req, res) => {
-  const issues = await readIssues();
-  const total = issues.length;
-  const resolved = issues.filter((i) => i.status === "resolved");
-  const byCategory = issues.reduce((acc, i) => {
-    acc[i.category] = (acc[i.category] || 0) + 1;
-    return acc;
-  }, {});
-  const avgResolutionDays = resolved.length
-    ? resolved.reduce((sum, i) => sum + (new Date(i.updatedAt) - new Date(i.createdAt)) / 86400000, 0) / resolved.length
-    : 0;
-  res.json({
-    totalReports: total,
-    resolved: resolved.length,
-    resolutionRate: total ? Math.round((resolved.length / total) * 100) : 0,
-    avgResolutionDays: Math.round(avgResolutionDays * 10) / 10,
-    byCategory,
-  });
-});
-
-app.get("/api/health", (_req, res) => res.json({ ok: true }));
-
-app.listen(PORT, () => {
-  console.log(`KOINOS API listening on http://localhost:${PORT}`);
-});
+app.get('/api/issues/:id',async(req,res)=>{if(pool){const r=await pool.query('SELECT * FROM issues WHERE id=$1',[req.params.id]);if(!r.rowCount)return res.status(404).json({error:'Issue not found'});const e=await pool.query('SELECT status,note,created_at FROM issue_events WHERE issue_id=$1 ORDER BY created_at',[req.params.id]);return res.json({...normalize(r.rows[0]),events:e.rows});}const i=(await readFallback()).find(x=>x.id===req.params.id);if(!i)return res.status(404).json({error:'Issue not found'});res.json(i);});
+app.post('/api/issues',async(req,res)=>{const b=req.body||{},description=String(b.description||'').trim(),title=String(b.title||description.slice(0,70)||'Civic issue').trim();if(!description&&!b.title)return res.status(400).json({error:'A title or description is required'});const sev=severity(`${title} ${description}`),p=priority(sev,0),id=crypto.randomUUID();if(pool){const r=await pool.query(`INSERT INTO issues(id,title,category,description,location_label,latitude,longitude,photo_url,anonymous,status,severity,priority) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'reported',$10,$11) RETURNING *`,[id,title,b.category||'other',description,b.locationLabel||null,Number.isFinite(Number(b.latitude))?Number(b.latitude):null,Number.isFinite(Number(b.longitude))?Number(b.longitude):null,b.photoUrl||null,Boolean(b.anonymous),sev,p]);await pool.query(`INSERT INTO issue_events(issue_id,status,note) VALUES($1,'reported','Report received')`,[id]);return res.status(201).json(normalize(r.rows[0]));}const issues=await readFallback(),issue={id,title,category:b.category||'other',description,locationLabel:b.locationLabel||null,latitude:b.latitude??null,longitude:b.longitude??null,photoUrl:b.photoUrl||null,anonymous:Boolean(b.anonymous),status:'reported',severity:sev,priority:p,upvotes:0,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};issues.push(issue);await writeFallback(issues);res.status(201).json(issue);});
+app.post('/api/issues/:id/upvote',async(req,res)=>{const device=String(req.get('x-device-id')||'').slice(0,120);if(!device)return res.status(400).json({error:'X-Device-ID required'});if(pool){const v=await pool.query('INSERT INTO issue_votes(issue_id,device_id) VALUES($1,$2) ON CONFLICT DO NOTHING RETURNING issue_id',[req.params.id,device]);if(!v.rowCount){const r=await pool.query('SELECT * FROM issues WHERE id=$1',[req.params.id]);return r.rowCount?res.json(normalize(r.rows[0])):res.status(404).json({error:'Issue not found'});}const r=await pool.query('UPDATE issues SET upvotes=upvotes+1,priority=LEAST(100,priority+1),updated_at=NOW() WHERE id=$1 RETURNING *',[req.params.id]);return res.json(normalize(r.rows[0]));}const issues=await readFallback(),i=issues.find(x=>x.id===req.params.id);if(!i)return res.status(404).json({error:'Issue not found'});i.upvotes=(i.upvotes||0)+1;i.priority=Math.min(100,(i.priority||0)+1);i.updatedAt=new Date().toISOString();await writeFallback(issues);res.json(i);});
+app.patch('/api/issues/:id/status',async(req,res)=>{if(!authAdmin(req,res))return;const status=req.body?.status,allowed=['reported','in_progress','resolved'];if(!allowed.includes(status))return res.status(400).json({error:`status must be one of ${allowed.join(', ')}`});if(pool){const r=await pool.query('UPDATE issues SET status=$1,updated_at=NOW() WHERE id=$2 RETURNING *',[status,req.params.id]);if(!r.rowCount)return res.status(404).json({error:'Issue not found'});await pool.query('INSERT INTO issue_events(issue_id,status,note) VALUES($1,$2,$3)',[req.params.id,status,req.body.note||null]);return res.json(normalize(r.rows[0]));}const issues=await readFallback(),i=issues.find(x=>x.id===req.params.id);if(!i)return res.status(404).json({error:'Issue not found'});i.status=status;i.updatedAt=new Date().toISOString();await writeFallback(issues);res.json(i);});
+app.get('/api/analytics',async(_req,res)=>{if(pool){const r=await pool.query(`SELECT COUNT(*) total,COUNT(*) FILTER(WHERE status='resolved') resolved,COUNT(*) FILTER(WHERE status='in_progress') in_progress,COUNT(*) FILTER(WHERE severity='high') critical FROM issues`),x=r.rows[0];const c=await pool.query('SELECT category,COUNT(*) count FROM issues GROUP BY category ORDER BY count DESC');return res.json({totalReports:Number(x.total),resolved:Number(x.resolved),inProgress:Number(x.in_progress),critical:Number(x.critical),resolutionRate:x.total?Math.round(Number(x.resolved)/Number(x.total)*100):0,byCategory:c.rows});}const i=await readFallback(),resolved=i.filter(x=>x.status==='resolved').length;res.json({totalReports:i.length,resolved,inProgress:i.filter(x=>x.status==='in_progress').length,critical:i.filter(x=>x.severity==='high').length,resolutionRate:i.length?Math.round(resolved/i.length*100):0});});
+await initDb();
+app.listen(PORT,()=>console.log(`KOINOS API listening on ${PORT} — ${pool?'PostgreSQL':'local fallback'}`));
