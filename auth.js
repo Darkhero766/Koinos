@@ -26,12 +26,13 @@
     if (initPromise) return initPromise;
     initPromise = (async () => {
       if (!window.supabase) await load('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
+      // Use Supabase's normal per-project browser key so an already signed-in
+      // KOINOS user is not silently logged out when moving between pages.
+      const projectRef = new URL(c.url).hostname.split('.')[0];
+      const storageKey = `sb-${projectRef}-auth-token`;
       client = window.supabase.createClient(c.url, c.anonKey, {
         auth: {
-          // Explicitly pin the browser session to one KOINOS key. This prevents
-          // different pages (Home/Live/Track/Account) from behaving like separate
-          // auth clients and keeps the login when navigating between them.
-          storageKey: 'koinos-auth-session',
+          storageKey,
           storage: window.localStorage,
           persistSession: true,
           autoRefreshToken: true,
@@ -83,9 +84,6 @@
         setTimeout(updateHeader, 0);
       });
       window.addEventListener('pagehide', () => subscription.unsubscribe(), { once: true });
-      // Safari/iPad can suspend a tab and restore it later. Re-read the persisted
-      // session when the page becomes visible instead of treating the suspension
-      // as a logout.
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') setTimeout(updateHeader, 50);
       });
