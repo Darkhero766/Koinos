@@ -1,85 +1,20 @@
 /* KOINOS — live civic layer: OpenStreetMap + PostgreSQL-backed civic data. */
-(() => {
-  const API = window.KOINOS_API_BASE || 'https://koinos-api-5v03.onrender.com';
-  const $ = (s, r = document) => r.querySelector(s);
-  const escapeHtml = value => String(value ?? '').replace(/[&<>\'\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;',"\"":'&quot;'}[c]));
-  const getDeviceId = () => { const key='koinos-device-id'; let id=localStorage.getItem(key); if(!id){id=crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`;localStorage.setItem(key,id);} return id; };
-  const getPosition = () => new Promise(resolve => {
-    if (!navigator.geolocation) return resolve({lat:12.9716,lng:77.5946,accuracy:null,source:'fallback'});
-    navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy,source:'gps'}),()=>resolve({lat:12.9716,lng:77.5946,accuracy:null,source:'fallback'}),{enableHighAccuracy:true,timeout:7000,maximumAge:60000});
-  });
-  async function reverseGeocode(position){
-    try{
-      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${position.lat}&lon=${position.lng}&zoom=18&addressdetails=1`,{headers:{Accept:'application/json','Accept-Language':'en'}});
-      if(!r.ok)return position.source==='gps'?'Your location':'Bengaluru';
-      const x=await r.json(),a=x.address||{};
-      return [a.road||a.pedestrian||a.neighbourhood,a.suburb||a.city_district,a.city||a.town||a.village].filter(Boolean).slice(0,3).join(', ') || x.display_name?.split(',').slice(0,3).join(', ') || 'Nearby';
-    }catch{return position.source==='gps'?'Your location':'Bengaluru';}
-  }
-  const loadLeaflet=()=>new Promise((resolve,reject)=>{
-    if(window.L)return resolve(window.L);
-    if(!document.querySelector('[data-koinos-leaflet-css]')){const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';css.dataset.koinosLeafletCss='true';document.head.appendChild(css);}
-    const old=document.querySelector('[data-koinos-leaflet-js]');if(old){old.addEventListener('load',()=>resolve(window.L));old.addEventListener('error',reject);return;}
-    const script=document.createElement('script');script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';script.defer=true;script.dataset.koinosLeafletJs='true';script.onload=()=>resolve(window.L);script.onerror=reject;document.head.appendChild(script);
-  });
-  const icon=(L,s='low')=>L.divIcon({className:'koinos-live-marker',html:`<span data-severity=\"${escapeHtml(s)}\"></span>`,iconSize:[28,28],iconAnchor:[14,14]});
-  const demoIssues=[
-    {id:'demo-1',title:'Large pothole',category:'roads',locationLabel:'MG Road, Bengaluru',latitude:12.9755,longitude:77.6010,severity:'high',priority:89,upvotes:47,status:'reported'},
-    {id:'demo-2',title:'Water leak',category:'water',locationLabel:'12th Main, Bengaluru',latitude:12.9682,longitude:77.5908,severity:'high',priority:87,upvotes:18,status:'in_progress'},
-    {id:'demo-3',title:'Overflowing waste',category:'waste',locationLabel:'100 Ft Road, Bengaluru',latitude:12.9790,longitude:77.5885,severity:'medium',priority:76,upvotes:32,status:'reported'}
-  ];
-  async function loadIssues(position){
-    try{const r=await fetch(`${API}/api/issues?lat=${position.lat}&lng=${position.lng}&radiusKm=12`,{headers:{Accept:'application/json'}});if(!r.ok)throw Error();const issues=await r.json();return issues.length?issues:demoIssues;}catch{return demoIssues;}
-  }
-  async function initRealMap(){
-    const el=$('#big-map');if(!el)return;
-    try{
-      const L=await loadLeaflet();el.innerHTML='';el.classList.add('koinos-real-map');
-      const position=await getPosition(), map=L.map(el,{zoomControl:false,scrollWheelZoom:false}).setView([position.lat,position.lng],14);
-      L.control.zoom({position:'topright'}).addTo(map);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
-      L.circleMarker([position.lat,position.lng],{radius:7,color:'#22231f',weight:3,fillColor:'#d9ff2f',fillOpacity:1}).addTo(map).bindPopup('You are here');
-      const issues=await loadIssues(position),markers=[];
-      issues.forEach(issue=>{if(!Number.isFinite(Number(issue.latitude))||!Number.isFinite(Number(issue.longitude)))return;const marker=L.marker([Number(issue.latitude),Number(issue.longitude)],{icon:icon(L,issue.severity||'low')}).addTo(map);marker.bindPopup(`<strong>${escapeHtml(issue.title||'Civic issue')}</strong><br>${escapeHtml(issue.locationLabel||'Nearby')}<br><b>${issue.upvotes||0}</b> people affected`);marker.on('click',()=>window.dispatchEvent(new CustomEvent('koinos:issue',{detail:issue})));marker.__issue=issue;markers.push(marker);});
-      window.KOINOS_MAP={map,markers,issues,position};
-      const loc=$('[data-koinos-location]');if(loc)loc.textContent=position.source==='gps'?'Using your location':'Showing Bengaluru';
-      setTimeout(()=>map.invalidateSize(),100);
-    }catch(e){console.warn('KOINOS map fallback',e);}
-  }
-  const fileToDataUrl=file=>new Promise(resolve=>{if(!file||!file.type.startsWith('image/')||file.size>4*1024*1024)return resolve(null);const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>resolve(null);reader.readAsDataURL(file);});
-  function setupPhotoUpload(){
-    const photo=$('#photo-upload');
-    if(!photo)return;
-    photo.accept='image/*';
-    photo.removeAttribute('capture');
-    photo.removeAttribute('capturemode');
-    const label=document.querySelector('label[for="photo-upload"]');
-    label?.addEventListener('click',e=>{e.preventDefault();photo.click();});
-    photo.addEventListener('change',e=>{
-      const file=e.target.files?.[0];
-      if(!file)return;
-      if(!file.type.startsWith('image/')){window.dispatchEvent(new CustomEvent('koinos:error',{detail:{message:'Please choose an image file.'}}));photo.value='';return;}
-      if(file.size>4*1024*1024){window.dispatchEvent(new CustomEvent('koinos:error',{detail:{message:'Photo is too large. Please choose an image under 4 MB.'}}));photo.value='';return;}
-      const name=$('#file-name');if(name)name.textContent=file.name;
-      const take=$('#take-photo');if(take)take.textContent='Change photo';
-      let preview=$('#photo-preview');
-      if(!preview){preview=document.createElement('img');preview.id='photo-preview';preview.alt='Selected issue photo';preview.loading='lazy';preview.style.cssText='display:block;width:100%;max-height:220px;object-fit:cover;border-radius:18px;margin:14px 0 0;';photo.parentElement?.appendChild(preview);}
-      const reader=new FileReader();reader.onload=()=>{preview.src=reader.result;preview.hidden=false;};reader.readAsDataURL(file);
-    });
-  }
-  async function submitReport(){
-    const description=$('#report-description')?.value?.trim()||'';if(!description)return null;
-    const position=await getPosition(),locationLabel=await reverseGeocode(position),file=$('#photo-upload')?.files?.[0],photoUrl=await fileToDataUrl(file);
-    const payload={title:description.slice(0,70),description,category:$('#report-category')?.value||'other',latitude:position.lat,longitude:position.lng,locationLabel,anonymous:Boolean($('#anonymous-toggle')?.checked),photoUrl};
-    try{
-      const r=await fetch(`${API}/api/issues`,{method:'POST',headers:{'Content-Type':'application/json','X-Device-ID':getDeviceId()},body:JSON.stringify(payload)});
-      const body=await r.json().catch(()=>({}));if(!r.ok)throw Error(body.error||`HTTP ${r.status}`);
-      window.dispatchEvent(new CustomEvent('koinos:created',{detail:{...body,photoName:file?.name||null}}));return body;
-    }catch(e){window.dispatchEvent(new CustomEvent('koinos:error',{detail:e}));console.warn('KOINOS report save failed',e);return null;}
-  }
-  async function upvote(issueId){if(!issueId||String(issueId).startsWith('demo-'))return null;try{const r=await fetch(`${API}/api/issues/${encodeURIComponent(issueId)}/upvote`,{method:'POST',headers:{'X-Device-ID':getDeviceId(),Accept:'application/json'}});const body=await r.json().catch(()=>({}));return r.ok||r.status===409?body:null;}catch{return null;}}
-  async function verify(issueId,verdict){if(!issueId||String(issueId).startsWith('demo-'))return null;try{const r=await fetch(`${API}/api/issues/${encodeURIComponent(issueId)}/verify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({verdict})});return r.ok?await r.json():null;}catch{return null;}}
-  function filterMap(category='all'){(window.KOINOS_MAP?.markers||[]).forEach(m=>{const match=category==='all'||m.__issue?.category===category;m.setOpacity(match?1:.15);});}
-  window.KOINOS_LIVE={submitReport,upvote,verify,getPosition,reverseGeocode,initRealMap,filterMap,apiBase:API,deviceId:getDeviceId};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupPhotoUpload);else setupPhotoUpload();
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initRealMap);else initRealMap();
+(()=>{
+ const API=window.KOINOS_API_BASE||'https://koinos-api-5v03.onrender.com';const $=(s,r=document)=>r.querySelector(s);
+ const escapeHtml=v=>String(v??'').replace(/[&<>\'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;',"\"":'&quot;'}[c]));
+ const getDeviceId=()=>{const k='koinos-device-id';let id=localStorage.getItem(k);if(!id){id=crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`;localStorage.setItem(k,id)}return id};
+ const getPosition=()=>new Promise(resolve=>{if(!navigator.geolocation)return resolve({lat:12.9716,lng:77.5946,accuracy:null,source:'fallback'});navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lng:p.coords.longitude,accuracy:p.coords.accuracy,source:'gps'}),()=>resolve({lat:12.9716,lng:77.5946,accuracy:null,source:'fallback'}),{enableHighAccuracy:true,timeout:7000,maximumAge:60000})});
+ async function reverseGeocode(p){try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${p.lat}&lon=${p.lng}&zoom=18&addressdetails=1`,{headers:{Accept:'application/json','Accept-Language':'en'}});if(!r.ok)throw Error();const x=await r.json(),a=x.address||{};return[a.road||a.pedestrian||a.neighbourhood,a.suburb||a.city_district,a.city||a.town||a.village].filter(Boolean).slice(0,3).join(', ')||'Nearby'}catch{return p.source==='gps'?'Your location':'Bengaluru'}}
+ const loadLeaflet=()=>new Promise((resolve,reject)=>{if(window.L)return resolve(window.L);if(!document.querySelector('[data-koinos-leaflet-css]')){const c=document.createElement('link');c.rel='stylesheet';c.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';c.dataset.koinosLeafletCss='true';document.head.appendChild(c)}const old=document.querySelector('[data-koinos-leaflet-js]');if(old){old.addEventListener('load',()=>resolve(window.L),{once:true});old.addEventListener('error',reject,{once:true});return}const s=document.createElement('script');s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';s.dataset.koinosLeafletJs='true';s.onload=()=>resolve(window.L);s.onerror=reject;document.head.appendChild(s)});
+ const icon=(L,s='low')=>L.divIcon({className:'koinos-live-marker',html:`<span data-severity="${escapeHtml(s)}"></span>`,iconSize:[28,28],iconAnchor:[14,14]});
+ async function loadIssues(p){try{const r=await fetch(`${API}/api/issues?lat=${p.lat}&lng=${p.lng}&radiusKm=12`,{headers:{Accept:'application/json'},cache:'no-store'});if(!r.ok)throw Error();const x=await r.json();return Array.isArray(x)?x:[]}catch(e){window.dispatchEvent(new CustomEvent('koinos:error',{detail:{message:'Live civic data could not be loaded. Check the API connection.'}}));return []}}
+ function renderEmpty(el){if(!el)return;const note=document.createElement('div');note.className='koinos-map-empty';note.innerHTML='<strong>No reported issues nearby yet.</strong><span>Be the first to make a local problem visible.</span>';el.appendChild(note)}
+ async function initRealMap(){const el=$('#big-map');if(!el)return;try{const L=await loadLeaflet();el.innerHTML='';el.classList.add('koinos-real-map');const p=await getPosition(),map=L.map(el,{zoomControl:false,scrollWheelZoom:false}).setView([p.lat,p.lng],14);L.control.zoom({position:'topright'}).addTo(map);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);L.circleMarker([p.lat,p.lng],{radius:7,color:'#22231f',weight:3,fillColor:'#d9ff2f',fillOpacity:1}).addTo(map).bindPopup('You are here');const issues=await loadIssues(p),markers=[];issues.forEach(issue=>{if(!Number.isFinite(Number(issue.latitude))||!Number.isFinite(Number(issue.longitude)))return;const m=L.marker([Number(issue.latitude),Number(issue.longitude)],{icon:icon(L,issue.severity||'low')}).addTo(map);m.bindPopup(`<strong>${escapeHtml(issue.title||'Civic issue')}</strong><br>${escapeHtml(issue.locationLabel||'Nearby')}<br><b>${issue.upvotes||0}</b> people affected`);m.on('click',()=>window.dispatchEvent(new CustomEvent('koinos:issue',{detail:issue})));m.__issue=issue;markers.push(m)});if(!markers.length)renderEmpty(el);window.KOINOS_MAP={map,markers,issues,position:p};const loc=$('[data-koinos-location]');if(loc)loc.textContent=p.source==='gps'?'Using your location':'Showing Bengaluru';const heading=$('.issue-panel-heading span');if(heading)heading.textContent=`${issues.length} issue${issues.length===1?'':'s'} near you`;setTimeout(()=>map.invalidateSize(),100)}catch(e){console.warn('KOINOS map error',e)}}
+ const fileToDataUrl=f=>new Promise(resolve=>{if(!f||!f.type.startsWith('image/')||f.size>4*1024*1024)return resolve(null);const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>resolve(null);r.readAsDataURL(f)});
+ function setupPhotoUpload(){const photo=$('#photo-upload');if(!photo)return;photo.accept='image/*';photo.removeAttribute('capture');photo.removeAttribute('capturemode');const label=document.querySelector('label[for="photo-upload"]');label?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();photo.click()});photo.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;if(!f.type.startsWith('image/')){window.dispatchEvent(new CustomEvent('koinos:error',{detail:{message:'Please choose an image file.'}}));photo.value='';return}if(f.size>4*1024*1024){window.dispatchEvent(new CustomEvent('koinos:error',{detail:{message:'Photo is too large. Please choose an image under 4 MB.'}}));photo.value='';return}$('#file-name')&&($('#file-name').textContent=f.name);$('#take-photo')&&($('#take-photo').textContent='Change photo');let preview=$('#photo-preview');if(!preview){preview=document.createElement('img');preview.id='photo-preview';preview.alt='Selected issue photo';preview.style.cssText='display:block;width:100%;max-height:220px;object-fit:cover;border-radius:18px;margin:14px 0 0';photo.parentElement?.appendChild(preview)}const r=new FileReader();r.onload=()=>{preview.src=r.result;preview.hidden=false};r.readAsDataURL(f)})}
+ async function submitReport(){const description=$('#report-description')?.value?.trim()||'';if(!description){window.dispatchEvent(new CustomEvent('koinos:error',{detail:{message:'Add a short description before submitting.'}}));return null}const p=await getPosition(),locationLabel=await reverseGeocode(p),file=$('#photo-upload')?.files?.[0],photoUrl=await fileToDataUrl(file);const payload={title:description.slice(0,70),description,category:$('#report-category')?.value||'other',latitude:p.lat,longitude:p.lng,locationLabel,anonymous:Boolean($('#anonymous-toggle')?.checked),photoUrl};try{const r=await fetch(`${API}/api/issues`,{method:'POST',headers:{'Content-Type':'application/json','X-Device-ID':getDeviceId()},body:JSON.stringify(payload)});const body=await r.json().catch(()=>({}));if(!r.ok)throw Error(body.error||`HTTP ${r.status}`);window.dispatchEvent(new CustomEvent('koinos:created',{detail:{...body,photoName:file?.name||null}}));return body}catch(e){window.dispatchEvent(new CustomEvent('koinos:error',{detail:{message:e.message||'Could not save report'}}));return null}}
+ async function upvote(id){if(!id)return null;try{const r=await fetch(`${API}/api/issues/${encodeURIComponent(id)}/upvote`,{method:'POST',headers:{'X-Device-ID':getDeviceId(),Accept:'application/json'}});const body=await r.json().catch(()=>({}));return r.ok||r.status===409?body:null}catch{return null}}
+ async function verify(id,verdict){if(!id)return null;try{const r=await fetch(`${API}/api/issues/${encodeURIComponent(id)}/verify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({verdict})});return r.ok?await r.json():null}catch{return null}}
+ function filterMap(category='all'){(window.KOINOS_MAP?.markers||[]).forEach(m=>{const match=category==='all'||m.__issue?.category===category;m.setOpacity(match?1:.15)})}
+ window.KOINOS_LIVE={submitReport,upvote,verify,getPosition,reverseGeocode,initRealMap,filterMap,apiBase:API,deviceId:getDeviceId};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupPhotoUpload);else setupPhotoUpload();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initRealMap);else initRealMap();
 })();
