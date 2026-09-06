@@ -3,7 +3,7 @@
   const APIS = CONFIG.apiCandidates || [window.KOINOS_API_BASE, 'https://koinos-api-5v03.onrender.com', 'https://koinos-api.onrender.com'].filter(Boolean);
   const PHOTO_BUCKET = CONFIG.photoBucket || 'issue-images';
   const $ = s => document.querySelector(s);
-  let map, marker, point, activeApi = APIS[0] || '';
+  let map, marker, point, activeApi = APIS[0] || '', supabaseClientPromise = null;
 
   async function api(path, options = {}) {
     let last;
@@ -31,39 +31,60 @@
 
   async function compress(file) {
     if (!file) return null;
-    if (!file.type?.startsWith('image/')) throw Error('Please choose an image file.');
+    if (!/^image\/(jpeg|png|webp)$/i.test(file.type)) throw Error('Choose a JPG, PNG or WebP image.');
     if (file.size > 12 * 1024 * 1024) throw Error('Please choose an image under 12 MB.');
     try {
       const url = URL.createObjectURL(file), im = new Image();
       await new Promise((resolve, reject) => { im.onload = resolve; im.onerror = reject; im.src = url; });
-      const max = 1800, scale = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+      const max = 1600, scale = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
       c.width = Math.max(1, Math.round(im.naturalWidth * scale)); c.height = Math.max(1, Math.round(im.naturalHeight * scale));
-      c.getContext('2d', { alpha: false }).drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
-      const blob = await new Promise(resolve => c.toBlob(resolve, 'image/jpeg', .82));
+      const ctx = c.getContext('2d', { alpha: false }); if (!ctx) throw Error('Image processor unavailable');
+      ctx.drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      let blob = null;
+      for (const quality of [.78, .68, .58, .48]) { blob = await new Promise(resolve => c.toBlob(resolve, 'image/jpeg', quality)); if (blob && blob.size <= 1500 * 1024) break; }
       return blob ? new File([blob], `koinos-${Date.now()}.jpg`, { type: 'image/jpeg' }) : file;
-    } catch { return file; }
+    } catch (e) { if (e?.message === 'Image processor unavailable') throw e; return file; }
   }
+
+  async function getStorageClient() {
+    if (window.KOINOS_AUTH?.client) return window.KOINOS_AUTH.client;
+    const c = window.KOINOS_SUPABASE || {};
+    if (!c.url || c.url.startsWith('PASTE_') || !c.anonKey || c.anonKey.startsWith('PASTE_')) return null;
+    if (!supabaseClientPromise) supabaseClientPromise = (async () => {
+      if (!window.supabase) await new Promise((resolve, reject) => {
+        const existing = document.querySelector('[data-koinos-supabase-sdk]');
+        if (existing) { existing.addEventListener('load', resolve, { once: true }); existing.addEventListener('error', reject, { once: true }); return; }
+        const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'; s.dataset.koinosSupabaseSdk = '1'; s.onload = resolve; s.onerror = () => reject(Error('Supabase client could not load')); document.head.appendChild(s);
+      });
+      return window.supabase.createClient(c.url, c.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+    })();
+    return supabaseClientPromise;
+  }
+
+  const dataUrlFallback = file => new Promise(resolve => { if (!file || file.size > 2 * 1024 * 1024) return resolve(null); const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = () => resolve(null); r.readAsDataURL(file); });
 
   async function uploadPhoto(file) {
     if (!file) return null;
     const prepared = await compress(file);
     try {
-      const ready = window.KOINOS_AUTH_READY ? await window.KOINOS_AUTH_READY : null, client = ready && window.KOINOS_AUTH?.client;
-      if (client) {
-        const { data: { user } } = await client.auth.getUser();
-        const device = localStorage.getItem('koinos-device-id') || (crypto.randomUUID?.() || String(Date.now()));
-        localStorage.setItem('koinos-device-id', device);
-        const folder = user?.id || `anonymous/${device}`;
-        const safe = prepared.name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(-80) || 'photo.jpg';
-        const path = `${folder}/${Date.now()}-${safe}`;
-        const { error } = await client.storage.from(PHOTO_BUCKET).upload(path, prepared, { contentType: 'image/jpeg', cacheControl: '31536000', upsert: false });
-        if (error) throw error;
-        return client.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl;
-      }
-      return await new Promise(resolve => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = () => resolve(null); r.readAsDataURL(prepared); });
+      const client = await getStorageClient();
+      if (!client) return dataUrlFallback(prepared);
+      let user = null; try { user = (await client.auth.getUser()).data?.user || null; } catch {}
+      const device = localStorage.getItem('koinos-device-id') || (crypto.randomUUID?.() || String(Date.now()));
+      localStorage.setItem('koinos-device-id', device);
+      const folder = user?.id || `anonymous/${device}`;
+      const safe = prepared.name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(-80) || 'photo.jpg';
+      const path = `${folder}/${Date.now()}-${safe}`;
+      const { error } = await client.storage.from(PHOTO_BUCKET).upload(path, prepared, { contentType: 'image/jpeg', cacheControl: '31536000', upsert: false });
+      if (error) throw error;
+      const { data } = client.storage.from(PHOTO_BUCKET).getPublicUrl(path);
+      if (!data?.publicUrl) throw Error('Supabase did not return a public photo URL.');
+      return data.publicUrl;
     } catch (e) {
-      console.warn('Supabase photo upload failed; using API fallback:', e);
-      return await new Promise(resolve => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = () => resolve(null); r.readAsDataURL(prepared); });
+      console.warn('KOINOS photo storage failed:', e);
+      const fallback = await dataUrlFallback(prepared);
+      if (fallback) return fallback;
+      throw Error(`Photo upload failed: ${e?.message || 'check Supabase Storage policies'}`);
     }
   }
 
