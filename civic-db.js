@@ -1,6 +1,4 @@
-/* KOINOS direct civic database bridge.
-   Uses Supabase directly from the static site so core reporting/account/live data
-   does not depend on a separate Render API being awake. */
+/* KOINOS direct civic database bridge. */
 (() => {
   const clean = (v, n = 5000) => String(v ?? '').trim().slice(0, n);
   const severity = text => {
@@ -38,8 +36,7 @@
     localStorage.setItem('koinos-tracked-report-ids', JSON.stringify(next));
   };
   async function createIssue(input) {
-    const c = await client();
-    if (!c) throw new Error('Supabase is not configured.');
+    const c = await client(); if (!c) throw new Error('Supabase is not configured.');
     const user = (await c.auth.getUser()).data?.user || null;
     const desc = clean(input.description, 3000), title = clean(input.title || desc.slice(0, 70) || 'Civic issue', 100);
     const sev = severity(`${title} ${desc}`);
@@ -49,15 +46,11 @@
       location_label: clean(input.locationLabel, 180) || null,
       latitude: Number(input.latitude), longitude: Number(input.longitude),
       photo_url: clean(input.photoUrl, 12000000) || null,
-      anonymous: Boolean(input.anonymous),
-      owner_user_id: input.anonymous ? null : (user?.id || null),
+      anonymous: Boolean(input.anonymous), owner_user_id: input.anonymous ? null : (user?.id || null),
       status: 'reported', severity: sev, priority: priority(sev), upvotes: 0
     };
     const { data, error } = await c.from('issues').insert(row).select('*').single();
     if (error) throw error;
-    // Keep a device-local receipt for BOTH anonymous and account-linked reports.
-    // This is what makes an anonymous submission trackable on the same device
-    // without attaching the report to a user account.
     rememberReport(data.id);
     try { await c.from('issue_events').insert({ issue_id: row.id, status: 'reported', note: 'Report received' }); } catch {}
     return normalize(data);
@@ -80,33 +73,28 @@
   }
   async function listMine() {
     const c = await client(); if (!c) throw new Error('Supabase is not configured.');
-    const user = (await c.auth.getUser()).data?.user || null;
-    const ids = trackedIds();
-    const results = new Map();
-
-    // Signed-in reports are the authoritative account history.
+    const user = (await c.auth.getUser()).data?.user || null, ids = trackedIds(), results = new Map();
     if (user) {
       const { data, error } = await c.from('issues').select('*').eq('owner_user_id', user.id).order('created_at', {ascending:false}).limit(200);
-      if (error) throw error;
-      (data || []).map(normalize).forEach(x => results.set(String(x.id), x));
+      if (error) throw error; (data || []).map(normalize).forEach(x => results.set(String(x.id), x));
     }
-
-    // Anonymous reports (and reports made before sign-in) are recovered from
-    // the device-local receipt list. The reports table is already public-read
-    // in this demo, so this requires no extra Supabase policy or migration.
     if (ids.length) {
       const { data, error } = await c.from('issues').select('*').in('id', ids);
       if (!error) (data || []).map(normalize).forEach(x => results.set(String(x.id), x));
     }
-
     return [...results.values()].sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   }
   async function upvote(id) {
     const c = await client(); if (!c) throw new Error('Supabase is not configured.');
     const { data, error } = await c.rpc('koinos_upvote_issue', { p_issue_id: String(id), p_device_id: deviceId() });
-    if (error) throw error;
-    if (!data) throw new Error('Issue not found.');
+    if (error) throw error; if (!data) throw new Error('Issue not found.');
     return typeof data === 'string' ? JSON.parse(data) : data;
   }
-  window.KOINOS_DB = { client, createIssue, listIssues, listMine, upvote, normalize, trackedIds };
+  async function updateIssueStatus(id, status, note = '') {
+    const c = await client(); if (!c) throw new Error('Supabase is not configured.');
+    const { data, error } = await c.rpc('koinos_authority_update_issue', { p_issue_id: String(id), p_status: String(status), p_note: clean(note, 500) });
+    if (error) throw error;
+    return typeof data === 'string' ? JSON.parse(data) : data;
+  }
+  window.KOINOS_DB = { client, createIssue, listIssues, listMine, upvote, updateIssueStatus, normalize, trackedIds };
 })();
