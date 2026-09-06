@@ -1,0 +1,1237 @@
+KOINOS — UI/UX TRANSFORMATION
+GLOBAL HACKATHON EDITION
+
+You are now the lead product designer for KOINOS.
+
+I have provided visual references showing the quality and design direction I want.
+
+IMPORTANT:
+Do NOT copy these designs literally.
+Use them as visual inspiration for:
+- typography
+- visual hierarchy
+- storytelling
+- composition
+- spacing
+- editorial layouts
+- bold section transitions
+- premium interactions
+- visual personality
+
+The goal is to transform the existing KOINOS website from a functional MVP into a product that looks like a globally recognized civic technology startup.
+
+==================================================
+1. CORE PRODUCT
+==================================================
+
+KOINOS
+
+Civic action, made visible.
+
+KOINOS helps ordinary people:
+- report local problems
+- discover problems around them
+- support problems affecting their community
+- track what authorities are doing
+- verify whether something was actually fixed
+
+Examples:
+Potholes
+Garbage
+Water leakage
+Broken streetlights
+Flooding
+Traffic problems
+Damaged public infrastructure
+Accessibility problems
+
+The central product loop:
+
+SEE
+↓
+REPORT
+↓
+CONNECT
+↓
+PRIORITIZE
+↓
+ACT
+↓
+VERIFY
+↓
+RESOLVE
+
+The most important concept:
+
+ONE PERSON REPORTS
+↓
+OTHERS CONFIRM
+↓
+KOINOS CREATES ONE SHARED COMMUNITY ISSUE
+↓
+AUTHORITIES ACT
+↓
+COMMUNITY VERIFIES
+
+==================================================
+2. MOST IMPORTANT UX GOAL
+==================================================
+
+KOINOS must be usable by:
+
+- a teenager
+- a senior citizen
+- someone who is not tech-savvy
+- someone using a phone for the first time
+- someone with limited English
+- someone who simply wants to report a pothole in 20 seconds
+
+If someone opens KOINOS and asks:
+
+"Where do I report something?"
+
+The answer must be visually obvious within 2 seconds.
+
+The primary action everywhere should be:
+
+REPORT AN ISSUE
+
+Do NOT make users understand the entire system before they can report something.
+
+Progressive disclosure:
+Show only what the user needs at that moment.
+
+==================================================
+3. VISUAL DIRECTION
+==================================================
+
+Use the provided reference screenshots as inspiration.
+
+Reference qualities:
+
+REFERENCE A:
+Bold editorial typography.
+Huge headlines.
+Unexpected layouts.
+Strong visual storytelling.
+Large visual blocks.
+Playful but sophisticated composition.
+
+REFERENCE B:
+Premium agency-quality website.
+Large whitespace.
+Clear storytelling.
+Beautiful transitions between sections.
+Strong use of typography and visual hierarchy.
+
+REFERENCE C:
+Modern technology product.
+Clean UI.
+Strong cards.
+Dark/light contrast.
+Product screens integrated into storytelling.
+
+KOINOS should combine these qualities.
+
+BUT:
+
+Do NOT make it:
+- childish
+- overly colorful
+- gimmicky
+- corporate-government looking
+- generic SaaS
+- Bootstrap-looking
+- full of identical cards
+- excessively rounded
+
+==================================================
+4. KOINOS VISUAL IDENTITY
+==================================================
+
+Create a distinctive visual language.
+
+Primary direction:
+
+Warm off-white / paper-like background
++
+near-black typography
++
+one strong signature accent color
++
+occasional dark sections
+
+Use the accent consistently for:
+- Report button
+- active map markers
+- progress
+- important statistics
+- AI highlights
+- community actions
+
+Use color sparingly.
+
+The interface should still look excellent in grayscale.
+
+==================================================
+5. TYPOGRAPHY
+==================================================
+
+Typography is one of the most important design elements.
+
+Use a premium modern typeface such as:
+Inter
+Geist
+Manrope
+or another excellent modern sans-serif.
+
+Use:
+
+HERO:
+Very large
+Bold
+Tight line-height
+
+Example:
+
+YOUR CITY
+HAS A VOICE.
+
+Do not make every section use giant typography.
+
+Create contrast:
+
+Huge headline
+↓
+small explanatory text
+↓
+large visual
+↓
+small metadata
+
+This creates an editorial rhythm.
+
+==================================================
+6. LANDING PAGE
+==================================================
+
+Rebuild the homepage completely if necessary.
+
+Do NOT create a conventional:
+
+Navbar
+Hero
+3 cards
+Features
+Testimonials
+Footer
+
+That is too generic.
+
+Instead create a storytelling experience.
+
+------------------------------------
+SECTION 1 — HERO
+------------------------------------
+
+Minimal navbar.
+
+Logo:
+
+KOINOS
+
+Navigation:
+
+How it works
+Explore
+Impact
+
+Right:
+
+Report an Issue
+
+Hero:
+
+YOUR CITY
+HAS A VOICE.
+
+Supporting text:
+
+The easiest way to report what is wrong,
+see what your community cares about,
+and know what happens next.
+
+Primary:
+
+REPORT AN ISSUE
+
+Secondary:
+
+EXPLORE YOUR AREA
+
+Behind/beside this should be a beautiful interactive civic map.
+
+The map should feel alive.
+
+Show subtle issue markers.
+
+Do NOT overwhelm the hero with UI.
+
+------------------------------------
+SECTION 2 — LIVE CIVIC PULSE
+------------------------------------
+
+Instead of generic feature cards, create a giant visual statement:
+
+EVERY DAY,
+PEOPLE NOTICE
+THINGS THAT
+SHOULDN'T BE THERE.
+
+Then visually show:
+
+broken streetlight
+pothole
+garbage
+water leak
+
+These can be represented using elegant imagery/illustrations/cards.
+
+Then transition:
+
+KOINOS
+turns those observations
+into collective action.
+
+------------------------------------
+SECTION 3 — THE MAGIC
+------------------------------------
+
+This is the hero product idea.
+
+Headline:
+
+ONE PROBLEM.
+NOT 37 COMPLAINTS.
+
+Visual animation:
+
+Person 1 → report
+Person 2 → report
+Person 3 → report
+...
+Person 37 → report
+
+The reports visually converge into:
+
+ONE COMMUNITY ISSUE
+
+Then show:
+
+37 reports
+47 people affected
+14 photos
+11 days unresolved
+
+This section must be visually memorable.
+
+------------------------------------
+SECTION 4 — REPORT
+------------------------------------
+
+Headline:
+
+SEE SOMETHING?
+SHOW US.
+
+Create a beautiful oversized report interaction.
+
+Large button:
+
++ REPORT AN ISSUE
+
+When clicked, open the report experience.
+
+Do not immediately show 10 form fields.
+
+Step 1:
+
+WHAT DID YOU SEE?
+
+[ TAKE PHOTO ]
+
+[ UPLOAD PHOTO ]
+
+Step 2:
+
+WHERE IS IT?
+
+Automatically detect location.
+
+Show map.
+
+Step 3:
+
+ANYTHING WE SHOULD KNOW?
+
+Simple description.
+
+Step 4:
+
+KOINOS ANALYZES IT.
+
+Animated AI sequence:
+
+Analyzing image
+Finding location
+Checking nearby reports
+Estimating impact
+Finding responsible department
+
+Then:
+
+ROAD DAMAGE DETECTED
+
+HIGH SEVERITY
+
+7 SIMILAR REPORTS NEARBY
+
+47 PEOPLE MAY BE AFFECTED
+
+Then:
+
+WE FOUND AN EXISTING COMMUNITY ISSUE.
+
+[ JOIN ISSUE ]
+
+[ REPORT SEPARATELY ]
+
+------------------------------------
+SECTION 5 — THE MAP
+------------------------------------
+
+Make the map a major visual experience.
+
+Headline:
+
+SEE WHAT
+YOUR NEIGHBORHOOD
+NEEDS.
+
+Large interactive map.
+
+Filters:
+
+Everything
+Roads
+Waste
+Water
+Streetlights
+Safety
+Accessibility
+
+Issue markers should communicate severity.
+
+Click marker:
+
+LARGE POTHOLE
+
+MG Road
+
+47 affected
+
+89 priority
+
+11 days unresolved
+
+[ SEE ISSUE ]
+
+Map controls should be simple enough for a non-technical person.
+
+------------------------------------
+SECTION 6 — COMMUNITY
+------------------------------------
+
+Headline:
+
+YOUR PROBLEM
+MIGHT NOT BE
+JUST YOUR PROBLEM.
+
+Show a large issue.
+
+Then:
+
+47 PEOPLE
+ARE AFFECTED.
+
+Instead of "Upvote":
+
+I'M AFFECTED TOO
+
+When clicked, animate:
+
+47 → 48
+
+Then show:
+
+48 residents
+1 shared issue
+1 community voice
+
+This is a major product differentiator.
+
+------------------------------------
+SECTION 7 — PRIORITY
+------------------------------------
+
+Headline:
+
+NOT ALL PROBLEMS
+ARE EQUALLY URGENT.
+
+Explain KOINOS priority engine visually.
+
+Example:
+
+Pothole A
+100 votes
+Low safety risk
+
+Pothole B
+18 votes
+Near school
+High safety risk
+30 days unresolved
+
+KOINOS prioritizes B.
+
+Show:
+
+PRIORITY
+89 / 100
+
+Breakdown:
+
+Safety
+28/30
+
+Impact
+23/25
+
+Duration
+17/20
+
+Evidence
+12/15
+
+Community
+9/10
+
+Make this visually beautiful and understandable.
+
+------------------------------------
+SECTION 8 — AUTHORITY
+------------------------------------
+
+Headline:
+
+FROM
+COMMUNITY VOICE
+TO ACTION.
+
+Show the authority dashboard as a product visualization.
+
+Do not dump the entire dashboard on the homepage.
+
+Show only the most compelling part:
+
+WHAT NEEDS ATTENTION?
+
+01
+Large pothole
+89
+HIGH
+
+02
+Water leak
+87
+HIGH
+
+03
+Broken streetlight
+81
+HIGH
+
+Then:
+
+ASSIGNED
+↓
+IN PROGRESS
+↓
+RESOLVED
+
+------------------------------------
+SECTION 9 — PROOF
+------------------------------------
+
+Headline:
+
+DON'T JUST
+SAY IT'S FIXED.
+
+SHOW US.
+
+Large before/after image.
+
+Interactive slider.
+
+BEFORE
+Damaged road
+
+AFTER
+Repaired road
+
+AI:
+
+REPAIR DETECTED
+94% confidence
+
+Then:
+
+IS THIS ACTUALLY FIXED?
+
+[ YES, RESOLVED ]
+
+[ STILL A PROBLEM ]
+
+After verification:
+
+COMMUNITY VERIFIED ✓
+
+This should be one of the most satisfying moments in the entire website.
+
+------------------------------------
+SECTION 10 — CIVIC HEALTH
+------------------------------------
+
+Headline:
+
+IS YOUR
+NEIGHBORHOOD
+GETTING BETTER?
+
+Show:
+
+INDIRANAGAR
+
+78 / 100
+
+Roads 72
+Waste 81
+Streetlights 91
+Water 74
+Public spaces 83
+
+Then:
+
++6 THIS MONTH
+
+Make the score feel like a living measurement.
+
+------------------------------------
+SECTION 11 — FINAL CTA
+------------------------------------
+
+Large dark section.
+
+Headline:
+
+SEE SOMETHING?
+MAKE IT COUNT.
+
+Text:
+
+A better neighborhood starts with someone noticing.
+
+Button:
+
+REPORT AN ISSUE
+
+Secondary:
+
+EXPLORE KOINOS
+
+------------------------------------
+FOOTER
+------------------------------------
+
+KOINOS
+
+Civic action, made visible.
+
+Product
+How it works
+Map
+Report
+Impact
+
+Community
+About
+Privacy
+Accessibility
+
+==================================================
+7. NAVIGATION
+==================================================
+
+Keep navigation extremely simple.
+
+Desktop:
+
+KOINOS
+
+How it works
+Explore
+Impact
+
+REPORT AN ISSUE
+
+Mobile:
+
+KOINOS
+
+Then bottom navigation:
+
+HOME
+MAP
+REPORT
+ACTIVITY
+PROFILE
+
+The REPORT button must be visually dominant.
+
+==================================================
+8. REPORT BUTTON
+==================================================
+
+This is the most important interaction.
+
+On desktop:
+Persistent "Report an Issue" CTA.
+
+On mobile:
+Floating/persistent report action.
+
+Do NOT hide it inside menus.
+
+==================================================
+9. ISSUE PAGE
+==================================================
+
+Make issue pages feel like stories, not database records.
+
+Example:
+
+LARGE POTHOLE
+
+MG Road
+
+HIGH PRIORITY
+89
+
+Then:
+
+47
+PEOPLE AFFECTED
+
+11
+DAYS UNRESOLVED
+
+14
+REPORTS
+
+Large evidence photo.
+
+Then:
+
+WHY THIS MATTERS
+
+AI summary.
+
+Then:
+
+COMMUNITY
+
+47 people have confirmed this problem.
+
+[ I'M AFFECTED TOO ]
+
+Then:
+
+WHAT HAPPENED NEXT
+
+Timeline.
+
+Then:
+
+BEFORE / AFTER
+
+Then:
+
+COMMUNITY VERIFICATION.
+
+==================================================
+10. MAKE THE MAP HUMAN
+==================================================
+
+Avoid technical map terminology.
+
+Do not show:
+
+"Lat"
+"Lng"
+"Coordinates"
+
+unless advanced users need them.
+
+Instead:
+
+Near you
+Your neighborhood
+Reported nearby
+Critical
+Being fixed
+Resolved
+
+When location permission is unavailable:
+
+"We couldn't find your location."
+
+[ SELECT LOCATION ON MAP ]
+
+Never show a technical error.
+
+==================================================
+11. ACCESSIBILITY
+==================================================
+
+This is extremely important.
+
+Implement:
+
+Large tap targets
+Readable font sizes
+Strong contrast
+Keyboard navigation
+Visible focus states
+Alt text
+ARIA labels
+Reduced motion support
+Clear status labels
+Do not rely on color alone
+
+Every status must include text/icon.
+
+Example:
+
+RED + "HIGH PRIORITY"
+
+not just red.
+
+==================================================
+12. LANGUAGE
+==================================================
+
+The interface copy should be extremely simple.
+
+Avoid:
+
+"Submit civic grievance"
+
+Use:
+
+"Report an issue"
+
+Avoid:
+
+"Endorse"
+
+Use:
+
+"I'm affected too"
+
+Avoid:
+
+"Resolution status"
+
+Use:
+
+"What happened next?"
+
+Avoid:
+
+"Geospatial location"
+
+Use:
+
+"Where is it?"
+
+Avoid:
+
+"AI-generated classification"
+
+Use:
+
+"What KOINOS found"
+
+==================================================
+13. SENIOR CITIZEN TEST
+==================================================
+
+Pretend a 65-year-old person opens the site.
+
+They should immediately understand:
+
+1. What KOINOS is
+2. How to report something
+3. Where to see local problems
+4. How to know whether something was fixed
+
+If any of these require explanation, simplify the UI.
+
+==================================================
+14. MOBILE-FIRST REPORTING
+==================================================
+
+On mobile:
+
+STEP 1
+TAKE A PHOTO
+
+STEP 2
+CONFIRM LOCATION
+
+STEP 3
+DESCRIBE
+
+STEP 4
+REPORT
+
+Maximum simplicity.
+
+Use a progress indicator:
+
+1 / 4
+2 / 4
+3 / 4
+4 / 4
+
+Do not make users scroll through a huge form.
+
+==================================================
+15. ANIMATION
+==================================================
+
+Use animation to communicate meaning.
+
+GOOD:
+
+Reports merging into one issue
+Priority number increasing
+Status timeline advancing
+Map markers appearing
+Before/after slider
+Community count changing
+Civic health score improving
+
+BAD:
+
+Random floating blobs
+Excessive parallax
+Spinning icons
+Animation everywhere
+Slow page transitions
+
+The site should feel alive, not distracting.
+
+==================================================
+16. IMAGE / VISUAL DIRECTION
+==================================================
+
+Use real-world civic imagery where appropriate.
+
+Visual subjects:
+
+roads
+streetlights
+garbage
+water
+parks
+public infrastructure
+people interacting with neighborhoods
+
+Avoid generic corporate stock photos of people in suits.
+
+Images should feel:
+documentary
+urban
+real
+human
+
+If images are unavailable, create tasteful visual placeholders rather than broken images.
+
+==================================================
+17. AUTHORITY DASHBOARD
+==================================================
+
+The citizen experience should remain extremely simple.
+
+The authority interface can be more information-dense.
+
+Authority navigation:
+
+Overview
+Issues
+Map
+Departments
+Analytics
+
+Overview:
+
+OPEN
+284
+
+CRITICAL
+18
+
+IN PROGRESS
+76
+
+RESOLVED
+392
+
+AVG RESOLUTION
+4.7 DAYS
+
+Then:
+
+WHAT NEEDS ATTENTION?
+
+Create a strong priority queue.
+
+==================================================
+18. DEMO MODE
+==================================================
+
+The entire application must be demoable without authentication.
+
+Create:
+
+EXPLORE DEMO
+
+The judge can experience:
+
+Citizen
+↓
+Report
+↓
+AI
+↓
+Duplicate detection
+↓
+Community support
+↓
+Authority
+↓
+Resolution
+↓
+Community verification
+
+No dead ends.
+
+==================================================
+19. VISUAL WOW MOMENTS
+==================================================
+
+Prioritize these five moments above everything else:
+
+WOW #1
+
+Upload pothole image.
+
+KOINOS understands it.
+
+WOW #2
+
+"7 similar reports found."
+
+Reports merge.
+
+WOW #3
+
+"47 residents affected."
+
+WOW #4
+
+Authority sees:
+
+PRIORITY 89
+
+WOW #5
+
+Before/after repair.
+
+Community verifies.
+
+Then:
+
+✓ COMMUNITY VERIFIED
+
+These moments should have exceptional animation and visual polish.
+
+==================================================
+20. DESIGN PRINCIPLE
+==================================================
+
+KOINOS should feel like:
+
+"Apple Maps meets Linear meets a civic movement."
+
+Not:
+
+"Government complaint portal."
+
+==================================================
+21. RESPONSIVENESS
+==================================================
+
+Test:
+
+iPhone
+iPad
+Laptop
+Desktop
+Large monitor
+
+Do not simply shrink desktop.
+
+Actually redesign layouts for mobile.
+
+==================================================
+22. PERFORMANCE
+==================================================
+
+Keep animations performant.
+
+Lazy-load large images.
+
+Avoid unnecessary dependencies.
+
+Do not sacrifice load speed for visual effects.
+
+==================================================
+23. FINAL QUALITY CHECK
+==================================================
+
+Before finishing:
+
+Open every route.
+
+Click every CTA.
+
+Test report flow.
+
+Test map.
+
+Test issue page.
+
+Test support action.
+
+Test authority dashboard.
+
+Test status changes.
+
+Test before/after.
+
+Test verification.
+
+Test QR.
+
+Test anonymous mode.
+
+Test mobile.
+
+Check console.
+
+Remove all broken links.
+
+Remove placeholder content.
+
+Remove lorem ipsum.
+
+Remove dead buttons.
+
+Make sure no section looks unfinished.
+
+==================================================
+24. MOST IMPORTANT INSTRUCTION
+==================================================
+
+Do not simply "make the existing website prettier."
+
+Re-think the UX.
+
+Every screen should answer:
+
+WHAT IS THIS?
+WHAT CAN I DO?
+WHAT HAPPENS NEXT?
+
+The product must be understandable without a tutorial.
+
+The design should make the judge think:
+
+"This feels like a real product."
+
+Then:
+
+"This is solving a real civic problem."
+
+Then:
+
+"I understand exactly why this is different."
+
+The final emotional journey should be:
+
+I NOTICE A PROBLEM.
+
+↓
+
+I CAN REPORT IT IN SECONDS.
+
+↓
+
+KOINOS FINDS OTHER PEOPLE WITH THE SAME PROBLEM.
+
+↓
+
+NOW WE HAVE A COMMUNITY ISSUE.
+
+↓
+
+KOINOS TELLS THE AUTHORITY WHAT MATTERS MOST.
+
+↓
+
+THE AUTHORITY ACTS.
+
+↓
+
+WE PROVE IT WAS FIXED.
+
+↓
+
+THE NEIGHBORHOOD GETS BETTER.
+
+That is the KOINOS experience.

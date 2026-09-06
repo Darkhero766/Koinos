@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="KOINOS makes civic action visible." />
+    <title>KOINOS — Civic action, made visible.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="wordmark" href="#top" aria-label="KOINOS home"><span class="wordmark-mark">K</span> KOINOS</a>
+        <nav class="desktop-nav" aria-label="Primary navigation">
+          <a href="#how-it-works">How it works</a>
+          <a href="#explore">Explore</a>
+          <a href="#impact">Impact</a>
+        </nav>
+        <div class="header-actions">
+          <button class="text-button demo-button" type="button" data-toast="Demo mode is ready — explore the neighborhood below.">Explore demo <span>↗</span></button>
+          <button class="button button-dark report-trigger" type="button"><span class="button-plus">+</span> Report an issue</button>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="hero section-pad">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="live-dot"></span> Civic action, made visible.</p>
+            <h1>Your city<br /><em>has a voice.</em></h1>
+            <p class="hero-lede">See what your community cares about, and know what happens next.</p>
+            <div class="hero-actions">
+              <button class="button button-accent report-trigger" type="button"><span class="button-plus">+</span> Report an issue</button>
+              <a class="button button-ghost" href="#explore">Explore your area <span>↗</span></a>
+            </div>
+            <div class="hero-note"><span class="avatar-stack"><i>R</i><i>A</i><i>+</i></span><span>1,284 neighbors are making things better</span></div>
+          </div>
+          <div class="hero-visual" aria-label="Interactive map preview">
+            <div class="map-topline"><span><span class="live-dot"></span> Live civic pulse</span><span class="mono">12.9716° N &nbsp;77.5946° E</span></div>
+            <div class="map-grid"></div>
+            <div class="map-road road-a"></div><div class="map-road road-b"></div><div class="map-road road-c"></div>
+            <div class="map-label label-one">INDIRANAGAR <small>your neighborhood</small></div>
+            <button class="map-marker marker-one" type="button" data-map-issue="pothole" aria-label="View large pothole issue"><span></span><b>89</b></button>
+            <button class="map-marker marker-two" type="button" data-map-issue="water" aria-label="View water leak issue"><span></span><b>87</b></button>
+            <button class="map-marker marker-three" type="button" data-map-issue="streetlights" aria-label="View broken streetlight issue"><span></span><b>81</b></button>
+            <div class="map-card">
+              <div class="map-card-icon">⌁</div>
+              <div><strong>3 issues near you</strong><span>Most need attention today</span></div>
+              <span class="map-card-arrow">↗</span>
+            </div>
+            <div class="map-compass">N<br /><span>+</span></div>
+          </div>
+        </section>
+
+        <section class="pulse section-pad">
+          <div class="section-intro">
+            <p class="eyebrow">01 / Notice</p>
+            <h2>Every day, people notice things that <em>shouldn't be there.</em></h2>
+          </div>
+          <div class="pulse-grid">
+            <article class="pulse-card pulse-card-tall">
+              <div class="card-image image-road"><span class="image-stamp">01</span><span class="image-caption">MG Road <b>·</b> 11 days unresolved</span></div>
+              <div class="card-copy"><span class="issue-tag tag-red">High priority</span><h3>A road that asks you to slow down.</h3><span class="card-meta">47 people affected</span></div>
+            </article>
+            <article class="pulse-card">
+              <div class="card-image image-water"><span class="image-stamp">02</span><span class="image-caption">12th Main <b>·</b> Reported nearby</span></div>
+              <div class="card-copy"><span class="issue-tag tag-blue">Water</span><h3>Small leaks become big problems.</h3><span class="card-meta">18 people affected</span></div>
+            </article>
+            <article class="pulse-card">
+              <div class="card-image image-waste"><span class="image-stamp">03</span><span class="image-caption">100 Ft Road <b>·</b> Community watching</span></div>
+              <div class="card-copy"><span class="issue-tag tag-yellow">Waste</span><h3>What gets left behind matters.</h3><span class="card-meta">32 people affected</span></div>
+            </article>
+          </div>
+          <div class="pulse-transition"><span class="line"></span><p>KOINOS turns those observations<br /><strong>into collective action.</strong></p><span class="line"></span></div>
+        </section>
+
+        <section class="merge-section dark-section section-pad" id="how-it-works">
+          <div class="section-intro split-intro">
+            <div><p class="eyebrow eyebrow-light">02 / Connect</p><h2>One problem.<br /><em>Not 37 complaints.</em></h2></div>
+            <p class="intro-side">KOINOS brings people who see the same thing into one shared community issue. Less noise. More signal.</p>
+          </div>
+          <div class="merge-stage" aria-live="polite">
+            <div class="report-stream">
+              <div class="stream-label">People reporting nearby <span>37 reports</span></div>
+              <div class="person-row"><span class="person-avatar p1">A</span><span class="person-avatar p2">R</span><span class="person-avatar p3">M</span><span class="person-avatar p4">S</span><span class="person-avatar p5">J</span><span class="person-avatar p6">P</span><span class="person-avatar p7">K</span><span class="person-avatar more">+30</span></div>
+              <div class="report-lines"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="merge-arrow">→</div>
+            <div class="shared-issue" id="shared-issue">
+              <div class="issue-icon">!</div><div><span class="issue-tag tag-red">Shared community issue</span><h3>Large pothole</h3><p>MG Road · Bengaluru</p></div><strong>89<small>priority</small></strong>
+            </div>
+          </div>
+          <div class="stats-strip"><div><strong>37</strong><span>reports become one</span></div><div><strong>47</strong><span>people affected</span></div><div><strong>14</strong><span>photos gathered</span></div><div><strong>11</strong><span>days unresolved</span></div></div>
+          <button class="text-button light merge-button" type="button">Watch it happen <span>↗</span></button>
+        </section>
+
+        <section class="report-section section-pad" id="report">
+          <div class="section-intro split-intro">
+            <div><p class="eyebrow">03 / Report</p><h2>See something?<br /><em>Show us.</em></h2></div>
+            <p class="intro-side">No forms to decipher. No civic vocabulary to learn. Just show us what happened and KOINOS will help with the rest.</p>
+          </div>
+          <div class="report-callout">
+            <div><span class="callout-kicker">The simple way to start</span><h3>One photo can start<br /><em>a community voice.</em></h3></div>
+            <button class="round-report report-trigger" type="button" aria-label="Open report an issue flow"><span>+</span><small>Report<br />an issue</small></button>
+          </div>
+          <div class="steps-row"><div class="step active"><span>01</span><b>Take a photo</b><small>Show us what you saw</small></div><div class="step"><span>02</span><b>Confirm location</b><small>We'll find it for you</small></div><div class="step"><span>03</span><b>Describe</b><small>Anything we should know?</small></div><div class="step"><span>04</span><b>Make it count</b><small>We connect the dots</small></div></div>
+        </section>
+
+        <section class="explore-section section-pad" id="explore">
+          <div class="section-intro split-intro">
+            <div><p class="eyebrow">04 / Explore</p><h2>See what your<br /><em>neighborhood needs.</em></h2></div>
+            <p class="intro-side">A living map of what people are noticing — and what is happening next.</p>
+          </div>
+          <div class="explore-layout">
+            <div class="big-map" id="big-map">
+              <div class="map-surface"></div><div class="big-road br-1"></div><div class="big-road br-2"></div><div class="big-road br-3"></div><div class="big-road br-4"></div>
+              <div class="map-neighborhood">INDIRANAGAR <small>your neighborhood</small></div>
+              <button class="big-marker bm-red selected" type="button" data-map-issue="pothole" style="--x: 43%; --y: 37%" aria-label="Large pothole, priority 89"><span>89</span></button>
+              <button class="big-marker bm-blue" type="button" data-map-issue="water" style="--x: 68%; --y: 65%" aria-label="Water leak, priority 87"><span>87</span></button>
+              <button class="big-marker bm-yellow" type="button" data-map-issue="waste" style="--x: 28%; --y: 67%" aria-label="Overflowing waste, priority 76"><span>76</span></button>
+              <button class="big-marker bm-orange" type="button" data-map-issue="streetlights" style="--x: 72%; --y: 26%" aria-label="Broken streetlight, priority 81"><span>81</span></button>
+              <div class="you-are-here"><span></span> Near you</div>
+              <div class="map-zoom"><button type="button" aria-label="Zoom in">+</button><button type="button" aria-label="Zoom out">−</button></div>
+            </div>
+            <aside class="issue-panel" aria-live="polite">
+              <div class="filter-row"><span>Showing</span><button class="filter-button active" data-filter="all" type="button">Everything</button><button class="filter-button" data-filter="roads" type="button">Roads</button><button class="filter-button" data-filter="water" type="button">Water</button><button class="filter-button" data-filter="streetlights" type="button">Lights</button></div>
+              <div class="issue-panel-heading"><span>3 issues near you</span><span class="mono">Updated just now</span></div>
+              <article class="selected-issue" id="selected-issue"><div class="issue-panel-top"><span class="issue-tag tag-red">High priority</span><span class="mono">11 days</span></div><h3>Large pothole</h3><p>MG Road, near 12th Main</p><div class="issue-metrics"><div><strong>47</strong><span>affected</span></div><div><strong>89</strong><span>priority</span></div><div><strong>14</strong><span>reports</span></div></div><button class="button button-dark full-button issue-detail-button" type="button">See this issue <span>↗</span></button></article>
+              <div class="mini-issue-list"><button type="button" data-map-issue="water"><span class="mini-dot blue"></span><b>Water leak</b><small>87 · 18 affected</small><span>→</span></button><button type="button" data-map-issue="streetlights"><span class="mini-dot orange"></span><b>Broken streetlight</b><small>81 · 23 affected</small><span>→</span></button></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="community-section dark-section section-pad">
+          <div class="community-copy"><p class="eyebrow eyebrow-light">05 / Together</p><h2>Your problem<br /><em>might not be<br />just your problem.</em></h2><p>One person notices. Then another. When a neighborhood confirms the same issue, it becomes impossible to ignore.</p><button class="button button-accent support-button" type="button">I'm affected too <span>↗</span></button><div class="support-note" aria-live="polite">47 people have confirmed this problem.</div></div>
+          <div class="community-visual"><div class="orbit orbit-1"></div><div class="orbit orbit-2"></div><div class="community-count"><strong id="affected-count">47</strong><span>people affected</span></div><div class="orbit-person op-1">R</div><div class="orbit-person op-2">A</div><div class="orbit-person op-3">M</div><div class="orbit-person op-4">J</div><div class="orbit-person op-5">S</div><div class="orbit-label">1 shared issue<br /><b>1 community voice</b></div></div>
+        </section>
+
+        <section class="priority-section section-pad" id="impact">
+          <div class="section-intro split-intro"><div><p class="eyebrow">06 / Prioritize</p><h2>Not all problems<br /><em>are equally urgent.</em></h2></div><p class="intro-side">KOINOS helps authorities see the difference between the loudest issue and the one that matters most.</p></div>
+          <div class="priority-layout"><div class="priority-comparison"><div class="compare-label">Two issues. One clear priority.</div><button class="priority-card" type="button"><span class="priority-number">A</span><div><h3>Small pothole</h3><p>100 votes · low safety risk</p></div><span class="priority-score low">42</span></button><button class="priority-card chosen" type="button"><span class="priority-number">B</span><div><h3>Pothole near a school</h3><p>18 votes · high safety risk</p></div><span class="priority-score">89</span></button><div class="priority-insight"><span>✦</span><p>KOINOS prioritizes <strong>impact</strong>, not just volume.</p></div></div><div class="score-card"><div class="score-top"><span>Priority score</span><span class="issue-tag tag-red">High priority</span></div><div class="score-number">89<small>/ 100</small></div><div class="score-bar"><span style="width: 89%"></span></div><div class="score-breakdown"><div><span>Safety</span><b>28/30</b><i><em style="width: 93%"></em></i></div><div><span>Impact</span><b>23/25</b><i><em style="width: 92%"></em></i></div><div><span>Duration</span><b>17/20</b><i><em style="width: 85%"></em></i></div><div><span>Evidence</span><b>12/15</b><i><em style="width: 80%"></em></i></div><div><span>Community</span><b>9/10</b><i><em style="width: 90%"></em></i></div></div></div></div>
+        </section>
+
+        <section class="authority-section dark-section section-pad">
+          <div class="section-intro split-intro"><div><p class="eyebrow eyebrow-light">07 / Act</p><h2>From community voice<br /><em>to action.</em></h2></div><p class="intro-side">The right issue reaches the right people, with the evidence to move it forward.</p></div>
+          <div class="authority-board"><div class="board-header"><div><span class="board-kicker">City operations / overview</span><h3>What needs attention?</h3></div><span class="board-date">Today, 09:41 AM ↗</span></div><div class="queue-list"><div class="queue-row"><span class="queue-index">01</span><div class="queue-title"><b>Large pothole</b><small>Roads · MG Road</small></div><strong>89</strong><span class="queue-status high">High</span><span class="queue-arrow">→</span></div><div class="queue-row"><span class="queue-index">02</span><div class="queue-title"><b>Water leak</b><small>Water · 12th Main</small></div><strong>87</strong><span class="queue-status high">High</span><span class="queue-arrow">→</span></div><div class="queue-row"><span class="queue-index">03</span><div class="queue-title"><b>Broken streetlight</b><small>Electrical · 100 Ft Road</small></div><strong>81</strong><span class="queue-status medium">Watch</span><span class="queue-arrow">→</span></div></div><div class="status-timeline"><span class="done">Assigned</span><i></i><span class="current">In progress</span><i></i><span>Resolved</span></div></div>
+        </section>
+
+        <section class="proof-section section-pad">
+          <div class="section-intro split-intro"><div><p class="eyebrow">08 / Verify</p><h2>Don't just say<br /><em>it's fixed. Show us.</em></h2></div><p class="intro-side">The people who reported the problem get to confirm what happened next.</p></div>
+          <div class="proof-layout"><div class="before-after" id="before-after"><div class="repair-image repaired"><span>AFTER <small>Road repaired</small></span></div><div class="repair-image damaged"><span>BEFORE <small>Damaged road</small></span></div><input class="comparison-slider" type="range" min="0" max="100" value="52" aria-label="Compare before and after repair" /><div class="slider-handle"></div></div><div class="proof-side"><span class="issue-tag tag-green">Repair detected · 94% confidence</span><h3>Is this actually fixed?</h3><p>Help your neighborhood close the loop. Your answer becomes part of the public record.</p><div class="proof-actions"><button class="button button-dark verify-button" type="button">Yes, resolved <span>✓</span></button><button class="button button-outline verify-button" type="button">Still a problem <span>↗</span></button></div><div class="verified-message" aria-live="polite">✓ Community verified</div></div></div>
+        </section>
+
+        <section class="health-section section-pad"><div class="health-heading"><p class="eyebrow">09 / Measure</p><h2>Is your neighborhood<br /><em>getting better?</em></h2><p>A simple score for the things that shape everyday life.</p></div><div class="health-score"><div class="health-ring"><div><strong>78</strong><span>/ 100</span></div></div><div><span class="mono">INDIRANAGAR</span><p class="positive">↗ +6 this month</p></div></div><div class="health-bars"><div><span>Roads</span><b>72</b><i><em style="width:72%"></em></i></div><div><span>Waste</span><b>81</b><i><em style="width:81%"></em></i></div><div><span>Streetlights</span><b>91</b><i><em style="width:91%"></em></i></div><div><span>Water</span><b>74</b><i><em style="width:74%"></em></i></div><div><span>Public spaces</span><b>83</b><i><em style="width:83%"></em></i></div></div></section>
+
+        <section class="final-cta dark-section section-pad"><p class="eyebrow eyebrow-light"><span class="live-dot"></span> The loop starts with you</p><h2>See something?<br /><em>Make it count.</em></h2><p>A better neighborhood starts with someone noticing.</p><div><button class="button button-accent report-trigger" type="button"><span class="button-plus">+</span> Report an issue</button><a class="button button-outline-light" href="#explore">Explore KOINOS <span>↗</span></a></div></section>
+      </main>
+
+      <footer class="site-footer"><div><a class="wordmark" href="#top"><span class="wordmark-mark">K</span> KOINOS</a><p>Civic action, made visible.</p></div><div class="footer-links"><div><b>Product</b><a href="#how-it-works">How it works</a><a href="#explore">Map</a><a href="#report">Report</a><a href="#impact">Impact</a></div><div><b>Community</b><a href="#top">About</a><a href="#top">Privacy</a><a href="#top">Accessibility</a></div></div><span class="footer-copy">© 2026 KOINOS<br />Built for better places.</span></footer>
+      <nav class="mobile-nav" aria-label="Mobile navigation"><a href="#top" class="active"><span>⌂</span>Home</a><a href="#explore"><span>⌖</span>Map</a><button class="mobile-report report-trigger" type="button"><span>+</span>Report</button><a href="#how-it-works"><span>◌</span>Activity</a><a href="#impact"><span>◯</span>Profile</a></nav>
+    </div>
+
+    <div class="modal-backdrop" id="report-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+      <div class="report-modal">
+        <button class="modal-close" type="button" aria-label="Close report flow">×</button>
+        <div class="modal-progress"><span id="modal-progress-bar"></span></div>
+        <div class="modal-header"><span class="mono" id="modal-step">01 / 04</span><span class="modal-save">Demo mode · no account needed</span></div>
+        <div class="report-step active" data-step="1"><p class="eyebrow">Start with what you saw</p><h2 id="modal-title">What did you see?</h2><p class="modal-subtitle">A photo helps KOINOS understand the issue faster.</p><div class="upload-drop"><div class="camera-icon">⌁</div><h3 id="file-name">Show us the problem</h3><p>Take a photo or choose one from your phone.</p><div><button class="button button-dark" type="button" id="take-photo">Take a photo</button><label class="button button-outline" for="photo-upload">Upload photo</label><input id="photo-upload" type="file" accept="image/*" hidden /></div></div><button class="modal-next button button-accent" type="button">Continue <span>→</span></button></div>
+        <div class="report-step" data-step="2"><p class="eyebrow">Step 02 / Location</p><h2>Where is it?</h2><p class="modal-subtitle">We found a spot near you. Move the pin if needed.</p><div class="mini-map"><div class="mini-map-lines"></div><div class="mini-pin">!</div><span>Near MG Road</span></div><div class="location-confirm"><span>⌖</span><div><strong>MG Road, Indiranagar</strong><small>Near 12th Main · Bengaluru</small></div><button type="button" aria-label="Edit location">Edit</button></div><button class="modal-next button button-accent" type="button">That’s the spot <span>→</span></button></div>
+        <div class="report-step" data-step="3"><p class="eyebrow">Step 03 / Details</p><h2>Anything we should know?</h2><p class="modal-subtitle">Keep it simple. A sentence is enough.</p><textarea id="report-description" rows="4" placeholder="E.g. Cars have to swerve around it..."></textarea><div class="suggestion-row"><button type="button" data-suggestion="It is blocking the road">Blocking the road</button><button type="button" data-suggestion="It feels unsafe at night">Feels unsafe</button><button type="button" data-suggestion="It has been here for days">Here for days</button></div><button class="modal-next button button-accent" type="button">Continue <span>→</span></button></div>
+        <div class="report-step" data-step="4"><p class="eyebrow">Step 04 / KOINOS finds the signal</p><h2>Let’s connect the dots.</h2><p class="modal-subtitle">We’ll check nearby reports and find the right path forward.</p><div class="ai-loading" id="ai-loading"><div class="ai-orb"><span>✦</span></div><div class="ai-lines"><p><span class="ai-check">✓</span> Reading your photo <b>Done</b></p><p><span class="ai-spinner"></span> Checking nearby reports <b>Finding...</b></p><p><span class="ai-pending">○</span> Estimating impact <b>Next</b></p></div></div><div class="ai-result" id="ai-result"><div class="result-icon">✓</div><span class="issue-tag tag-red">What KOINOS found</span><h3>Road damage detected</h3><strong>High severity</strong><div class="result-stats"><span><b>7</b> similar reports nearby</span><span><b>47</b> people may be affected</span></div><p>We found an existing community issue.</p><button class="button button-accent join-issue-button" type="button">Join this issue <span>→</span></button><button class="button button-text separate-button" type="button">Report separately</button></div></div>
+        <div class="modal-success" id="modal-success"><div class="success-mark">✓</div><p class="eyebrow">You made it visible</p><h2>One more voice<br /><em>for MG Road.</em></h2><p>Your report joined 37 others. KOINOS will keep you posted on what happens next.</p><button class="button button-dark close-success" type="button">Back to the neighborhood <span>↗</span></button></div>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
