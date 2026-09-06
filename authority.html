@@ -1,68 +1,88 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="KOINOS authority dashboard — what needs attention right now." />
-    <title>KOINOS — Authority dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css" />
-    <link rel="stylesheet" href="./hackathon-polish.css" />
-  </head>
-  <body>
-    <div class="site-shell">
-      <header class="site-header">
-        <a class="wordmark" href="./index.html" aria-label="KOINOS home"><span class="wordmark-mark">K</span> KOINOS</a>
-        <nav class="desktop-nav" aria-label="Primary navigation"><span class="board-kicker">City operations</span></nav>
-        <div class="header-actions"><a class="text-button" href="./index.html">Back to citizen view <span>↗</span></a></div>
-      </header>
-      <main id="top">
-        <section class="section-pad">
-          <div class="section-intro"><p class="eyebrow">Authority dashboard</p><h2>What needs<br /><em>attention today.</em></h2></div>
-          <div class="analytics-grid" style="margin-top:2.5rem">
-            <div class="analytics-stat"><strong id="stat-open">—</strong><span>Open</span></div>
-            <div class="analytics-stat"><strong id="stat-critical">—</strong><span>Critical</span></div>
-            <div class="analytics-stat"><strong id="stat-progress">—</strong><span>In progress</span></div>
-            <div class="analytics-stat"><strong id="stat-resolved">—</strong><span>Resolved</span></div>
-          </div>
-          <div class="authority-board" style="margin-top:2.5rem">
-            <div class="board-header"><div><span class="board-kicker">City operations / live queue</span><h3>What needs attention?</h3></div><span class="board-date" id="queue-updated">Loading…</span></div>
-            <div class="queue-list" id="queue-list"><div class="queue-row"><span class="queue-index">—</span><div class="queue-title"><b>Loading civic issues…</b><small>Connecting to KOINOS API</small></div><strong>—</strong><span class="queue-status medium">Live</span><span class="queue-arrow">→</span></div></div>
-            <div class="status-timeline"><span class="done">Reported</span><i></i><span class="current">In progress</span><i></i><span>Resolved</span></div>
-          </div>
-          <div class="analytics-board" style="margin-top:2rem" aria-label="Analytics for authorities">
-            <div class="board-header"><div><span class="board-kicker">Analytics</span><h3>This month, at a glance</h3></div><span class="board-date">Live from database</span></div>
-            <div class="analytics-grid">
-              <div class="analytics-stat"><strong id="stat-total">—</strong><span>Total reports</span></div>
-              <div class="analytics-stat"><strong id="stat-resolved-month">—</strong><span>Resolved</span></div>
-              <div class="analytics-stat"><strong id="stat-rate">—</strong><span>Resolution rate</span></div>
-              <div class="analytics-stat"><strong id="stat-supporters">—</strong><span>Community confirmations</span></div>
-            </div>
-            <div class="analytics-breakdown" id="category-breakdown"><div><span>Loading categories</span><b>—</b><i><em style="width:10%"></em></i></div></div>
-            <p class="analytics-note">✦ KOINOS prioritizes issues using safety, community impact, evidence and time unresolved.</p>
-          </div>
-        </section>
-      </main>
-      <footer class="site-footer"><div><a class="wordmark" href="./index.html"><span class="wordmark-mark">K</span> KOINOS</a><p>Civic action, made visible.</p></div><span class="footer-copy">© 2026 KOINOS<br />Authority dashboard — connected to the same reports citizens see.</span></footer>
-    </div>
-    <script>
-      const API = window.KOINOS_API_BASE || (location.hostname === 'koinos.onrender.com' ? 'https://koinos-api.onrender.com' : '');
-      const esc = v => String(v ?? '').replace(/[&<>\'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-      const set = (id,v) => { const n=document.getElementById(id); if(n)n.textContent=v; };
-      async function load(){
-        if(!API){ set('queue-updated','Demo / API not configured'); return; }
-        try{
-          const [issuesRes,analyticsRes]=await Promise.all([fetch(`${API}/api/issues?radiusKm=100`),fetch(`${API}/api/analytics`)]);
-          const issues=await issuesRes.json(), a=await analyticsRes.json();
-          set('stat-open',Math.max(0,(a.totalReports||0)-(a.resolved||0)));set('stat-critical',a.critical??0);set('stat-progress',a.inProgress??0);set('stat-resolved',a.resolved??0);set('stat-total',a.totalReports??0);set('stat-resolved-month',a.resolved??0);set('stat-rate',`${a.resolutionRate??0}%`);set('stat-supporters',a.supporters??0);set('queue-updated',`Live · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`);
-          const rows=issues.slice(0,8);document.getElementById('queue-list').innerHTML=rows.length?rows.map((i,n)=>`<div class="queue-row"><span class="queue-index">${String(n+1).padStart(2,'0')}</span><div class="queue-title"><b>${esc(i.title)}</b><small>${esc(i.category)} · ${esc(i.locationLabel||'Location pending')}</small></div><strong>${i.priority??0}</strong><span class="queue-status ${i.severity==='high'?'high':'medium'}">${esc(i.status==='in_progress'?'In progress':i.severity==='high'?'High':'Watch')}</span><span class="queue-arrow">→</span></div>`).join(''):'<div class="queue-row"><div class="queue-title"><b>No active issues yet.</b><small>New citizen reports will appear here.</small></div></div>';
-          const cats=a.byCategory||[];const max=Math.max(1,...cats.map(x=>Number(x.count)||0));document.getElementById('category-breakdown').innerHTML=cats.length?cats.slice(0,6).map(x=>`<div><span>${esc(x.category)}</span><b>${Number(x.count)||0}</b><i><em style="width:${Math.round((Number(x.count)||0)/max*100)}%"></em></i></div>`).join(''):'<div><span>No category data yet</span><b>0</b><i><em style="width:0%"></em></i></div>';
-        }catch(e){set('queue-updated','API unavailable');set('queue-list','Unable to load live civic data.');}
-      }
-      load();
-      setInterval(load,60000);
-    </script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="KOINOS authority workspace — review and update civic issues." />
+  <title>KOINOS — Authority access</title>
+  <link rel="stylesheet" href="./pages.css?v=20260906-14" />
+  <link rel="stylesheet" href="./hackathon-polish.css?v=20260906-14" />
+  <style>
+    .authority-gate{max-width:720px;margin:7rem auto;padding:3rem;border:1px solid rgba(32,33,31,.12);border-radius:28px;background:#fff}
+    .authority-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin:2rem 0 1rem}
+    .authority-toolbar select{border:1px solid rgba(32,33,31,.15);border-radius:999px;padding:10px 16px;background:#fff;font:inherit}
+    .authority-list{display:grid;gap:14px}
+    .authority-card{display:grid;grid-template-columns:110px 1fr auto;gap:18px;align-items:stretch;padding:16px;border:1px solid rgba(32,33,31,.12);border-radius:22px;background:#fff}
+    .authority-card img{width:110px;height:100%;min-height:110px;object-fit:cover;border-radius:15px;background:#ecebe5}
+    .authority-card.no-photo{grid-template-columns:1fr auto}.authority-card.no-photo img{display:none}
+    .authority-card h3{margin:4px 0 6px;font-size:20px}.authority-card p{margin:0;color:#686861;line-height:1.5}.authority-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}.authority-pill{display:inline-flex;padding:5px 9px;border-radius:999px;background:#f0efe9;font:12px 'DM Mono',monospace;text-transform:uppercase}.authority-pill.high{background:#ffe1df}.authority-pill.medium{background:#fff0c4}.authority-pill.resolved{background:#dff5e5}.authority-actions{display:flex;flex-direction:column;gap:8px;justify-content:center}.authority-actions button{border:0;border-radius:999px;padding:10px 13px;cursor:pointer;font-weight:700;background:#20211f;color:#fff}.authority-actions button.secondary{background:#eef0e8;color:#20211f}.authority-empty{padding:30px;text-align:center;border:1px dashed rgba(32,33,31,.2);border-radius:22px;color:#686861}
+    @media(max-width:720px){.authority-gate{margin:4rem 1rem;padding:2rem}.authority-card{grid-template-columns:1fr}.authority-card.no-photo{grid-template-columns:1fr}.authority-card img{width:100%;height:180px}.authority-actions{flex-direction:row;flex-wrap:wrap}.authority-toolbar{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">K</span>KOINOS</a>
+    <nav class="nav"><a href="/">Home</a><a href="/live.html">Live issues</a><a href="/track.html">Track a report</a></nav>
+    <div class="actions"><span class="mono" data-user-email>Checking access…</span><button class="btn btn-dark" data-signout type="button">Sign out</button></div>
+  </header>
+  <main class="page" id="authority-app">
+    <section class="authority-gate" id="authority-gate">
+      <p class="eyebrow">Authority access</p><h1>City operations<br><em>starts here.</em></h1>
+      <p class="lede" id="gate-message">Checking your KOINOS account and authority role…</p>
+      <a class="btn btn-dark" id="gate-action" href="/auth.html">Sign in to continue</a>
+    </section>
+    <section id="authority-workspace" hidden>
+      <div class="section-intro"><p class="eyebrow">Authority workspace</p><h1>Problems that need<br><em>attention.</em></h1><p class="lede">Review citizen reports, evidence and locations. Move verified work from reported → in progress → resolved.</p></div>
+      <div class="analytics-grid" style="margin-top:2rem"><div class="analytics-stat"><strong id="count-open">—</strong><span>Open</span></div><div class="analytics-stat"><strong id="count-high">—</strong><span>High severity</span></div><div class="analytics-stat"><strong id="count-progress">—</strong><span>In progress</span></div><div class="analytics-stat"><strong id="count-resolved">—</strong><span>Resolved</span></div></div>
+      <div class="authority-toolbar"><div><span class="board-kicker">Live report queue</span><div class="muted" id="updated">Loading…</div></div><select id="filter"><option value="all">All reports</option><option value="reported">Reported</option><option value="in_progress">In progress</option><option value="resolved">Resolved</option><option value="high">High severity</option></select></div>
+      <div class="authority-list" id="authority-list"></div>
+    </section>
+  </main>
+</div>
+<script src="./site-config.js?v=20260906-14"></script>
+<script src="./supabase-config.js?v=20260906-14"></script>
+<script src="./auth.js?v=20260906-14"></script>
+<script src="./civic-db.js?v=20260906-14"></script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const esc = v => String(v ?? '').replace(/[&<>\'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  let issues = [];
+  const statusLabel = s => s === 'in_progress' ? 'In progress' : s === 'resolved' ? 'Resolved' : 'Reported';
+  const render = () => {
+    const filter = $('#filter').value;
+    const rows = issues.filter(i => filter==='all' || i.status===filter || (filter==='high' && i.severity==='high'));
+    $('#authority-list').innerHTML = rows.length ? rows.map(i => `
+      <article class="authority-card ${i.photoUrl ? '' : 'no-photo'}">
+        ${i.photoUrl ? `<img src="${esc(i.photoUrl)}" alt="Evidence for ${esc(i.title)}" loading="lazy">` : ''}
+        <div><div class="authority-meta"><span class="authority-pill ${esc(i.severity)}">${esc(i.severity||'low')}</span><span class="authority-pill ${i.status==='resolved'?'resolved':''}">${esc(statusLabel(i.status))}</span><span class="authority-pill">${Number(i.upvotes)||0} supporters</span></div><h3>${esc(i.title)}</h3><p><strong>${esc(i.category||'Other')}</strong> · ${esc(i.locationLabel||'Location pending')}</p><p style="margin-top:8px">${esc(i.description||'No description provided.')}</p><p class="muted" style="margin-top:8px">Reported ${new Date(i.createdAt||Date.now()).toLocaleString()} · Priority ${Number(i.priority)||0}</p></div>
+        <div class="authority-actions"><button data-status="in_progress" data-id="${esc(i.id)}" ${i.status==='in_progress'?'disabled':''}>Start work</button><button class="secondary" data-status="resolved" data-id="${esc(i.id)}" ${i.status==='resolved'?'disabled':''}>Resolve</button></div>
+      </article>`).join('') : '<div class="authority-empty">No reports match this filter.</div>';
+  };
+  const stats = () => { $('#count-open').textContent=issues.filter(i=>i.status!=='resolved').length; $('#count-high').textContent=issues.filter(i=>i.severity==='high'&&i.status!=='resolved').length; $('#count-progress').textContent=issues.filter(i=>i.status==='in_progress').length; $('#count-resolved').textContent=issues.filter(i=>i.status==='resolved').length; };
+  async function load(){
+    try { issues = await window.KOINOS_DB.listIssues({radiusKm:100}); stats(); render(); $('#updated').textContent=`Updated ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`; }
+    catch(e){ $('#authority-list').innerHTML=`<div class="authority-empty">Could not load reports: ${esc(e.message||'Unknown error')}</div>`; }
+  }
+  async function boot(){
+    try {
+      const client = await window.KOINOS_AUTH_READY;
+      const session = client ? (await client.auth.getSession()).data.session : null;
+      if (!session?.user) { $('#gate-message').textContent='Authority accounts must sign in before opening the operations workspace.'; $('#gate-action').href='/auth.html?next=/authority.html'; return; }
+      const profile = await window.KOINOS_AUTH.getProfile();
+      if (profile?.role !== 'authority') { $('#gate-message').textContent='This account is a citizen account. Ask a KOINOS administrator to promote your account to the authority role.'; $('#gate-action').textContent='Back to account'; $('#gate-action').href='/auth.html'; return; }
+      $('#authority-gate').hidden=true; $('#authority-workspace').hidden=false; await load(); setInterval(load,60000);
+    } catch(e){ $('#gate-message').textContent='Authority access is unavailable until Supabase is configured.'; }
+  }
+  $('#filter').addEventListener('change', render);
+  document.addEventListener('click', async e => {
+    const b=e.target.closest('[data-status]'); if(!b)return; b.disabled=true;
+    try { await window.KOINOS_DB.updateIssueStatus(b.dataset.id,b.dataset.status,`Authority updated status to ${statusLabel(b.dataset.status)}`); await load(); }
+    catch(err){ alert(err.message||'Could not update issue.'); b.disabled=false; }
+  });
+  boot();
+})();
+</script>
+</body>
 </html>
