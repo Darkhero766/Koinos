@@ -15,86 +15,54 @@
     <div class="site-shell">
       <header class="site-header">
         <a class="wordmark" href="./index.html" aria-label="KOINOS home"><span class="wordmark-mark">K</span> KOINOS</a>
-        <nav class="desktop-nav" aria-label="Primary navigation">
-          <span class="board-kicker">City operations</span>
-        </nav>
-        <div class="header-actions">
-          <a class="text-button" href="./index.html">Back to citizen view <span>↗</span></a>
-        </div>
+        <nav class="desktop-nav" aria-label="Primary navigation"><span class="board-kicker">City operations</span></nav>
+        <div class="header-actions"><a class="text-button" href="./index.html">Back to citizen view <span>↗</span></a></div>
       </header>
-
       <main id="top">
         <section class="section-pad">
-          <div class="section-intro">
-            <p class="eyebrow">Authority dashboard</p>
-            <h2>What needs<br /><em>attention today.</em></h2>
-          </div>
-
+          <div class="section-intro"><p class="eyebrow">Authority dashboard</p><h2>What needs<br /><em>attention today.</em></h2></div>
           <div class="analytics-grid" style="margin-top:2.5rem">
-            <div class="analytics-stat"><strong data-count-to="284">0</strong><span>Open</span></div>
-            <div class="analytics-stat"><strong data-count-to="18">0</strong><span>Critical</span></div>
-            <div class="analytics-stat"><strong data-count-to="76">0</strong><span>In progress</span></div>
-            <div class="analytics-stat"><strong data-count-to="392">0</strong><span>Resolved</span></div>
+            <div class="analytics-stat"><strong id="stat-open">—</strong><span>Open</span></div>
+            <div class="analytics-stat"><strong id="stat-critical">—</strong><span>Critical</span></div>
+            <div class="analytics-stat"><strong id="stat-progress">—</strong><span>In progress</span></div>
+            <div class="analytics-stat"><strong id="stat-resolved">—</strong><span>Resolved</span></div>
           </div>
-
           <div class="authority-board" style="margin-top:2.5rem">
-            <div class="board-header"><div><span class="board-kicker">City operations / overview</span><h3>What needs attention?</h3></div><span class="board-date">Today, 09:41 AM ↗</span></div>
-            <div class="queue-list">
-              <div class="queue-row"><span class="queue-index">01</span><div class="queue-title"><b>Pothole near a school</b><small>Roads · MG Road</small></div><strong>89</strong><span class="queue-status high">High</span><span class="queue-arrow">→</span></div>
-              <div class="queue-row"><span class="queue-index">02</span><div class="queue-title"><b>Water leak</b><small>Water · 12th Main</small></div><strong>87</strong><span class="queue-status high">High</span><span class="queue-arrow">→</span></div>
-              <div class="queue-row"><span class="queue-index">03</span><div class="queue-title"><b>Broken streetlight</b><small>Electrical · 100 Ft Road</small></div><strong>81</strong><span class="queue-status medium">Watch</span><span class="queue-arrow">→</span></div>
-            </div>
-            <div class="status-timeline"><span class="done">Assigned</span><i></i><span class="current">In progress</span><i></i><span>Resolved</span></div>
+            <div class="board-header"><div><span class="board-kicker">City operations / live queue</span><h3>What needs attention?</h3></div><span class="board-date" id="queue-updated">Loading…</span></div>
+            <div class="queue-list" id="queue-list"><div class="queue-row"><span class="queue-index">—</span><div class="queue-title"><b>Loading civic issues…</b><small>Connecting to KOINOS API</small></div><strong>—</strong><span class="queue-status medium">Live</span><span class="queue-arrow">→</span></div></div>
+            <div class="status-timeline"><span class="done">Reported</span><i></i><span class="current">In progress</span><i></i><span>Resolved</span></div>
           </div>
-
           <div class="analytics-board" style="margin-top:2rem" aria-label="Analytics for authorities">
-            <div class="board-header"><div><span class="board-kicker">Analytics</span><h3>This month, at a glance</h3></div><span class="board-date">Auto-generated ↗</span></div>
+            <div class="board-header"><div><span class="board-kicker">Analytics</span><h3>This month, at a glance</h3></div><span class="board-date">Live from database</span></div>
             <div class="analytics-grid">
-              <div class="analytics-stat"><strong data-count-to="214">0</strong><span>Total reports</span></div>
-              <div class="analytics-stat"><strong data-count-to="89">0</strong><span>Resolved this month</span></div>
-              <div class="analytics-stat"><strong data-count-to="72" data-suffix="%">0</strong><span>Resolution rate</span></div>
-              <div class="analytics-stat"><strong data-count-to="4" data-suffix=".2d">0</strong><span>Avg. time to fix</span></div>
+              <div class="analytics-stat"><strong id="stat-total">—</strong><span>Total reports</span></div>
+              <div class="analytics-stat"><strong id="stat-resolved-month">—</strong><span>Resolved</span></div>
+              <div class="analytics-stat"><strong id="stat-rate">—</strong><span>Resolution rate</span></div>
+              <div class="analytics-stat"><strong id="stat-supporters">—</strong><span>Community confirmations</span></div>
             </div>
-            <div class="analytics-breakdown">
-              <div><span>Roads</span><b>96</b><i><em style="width:100%"></em></i></div>
-              <div><span>Water</span><b>54</b><i><em style="width:56%"></em></i></div>
-              <div><span>Waste</span><b>41</b><i><em style="width:43%"></em></i></div>
-              <div><span>Streetlights</span><b>23</b><i><em style="width:24%"></em></i></div>
-            </div>
-            <p class="analytics-note">✦ What KOINOS found: <em>Road damage on MG Road accounts for the largest share of high-severity reports this month; water leak reports are trending up 18% week-over-week near 12th Main.</em></p>
+            <div class="analytics-breakdown" id="category-breakdown"><div><span>Loading categories</span><b>—</b><i><em style="width:10%"></em></i></div></div>
+            <p class="analytics-note">✦ KOINOS prioritizes issues using safety, community impact, evidence and time unresolved.</p>
           </div>
         </section>
       </main>
-
       <footer class="site-footer"><div><a class="wordmark" href="./index.html"><span class="wordmark-mark">K</span> KOINOS</a><p>Civic action, made visible.</p></div><span class="footer-copy">© 2026 KOINOS<br />Authority dashboard — connected to the same reports citizens see.</span></footer>
     </div>
-
-    <script type="module">
-      // Count-up animation for this page's stat cards — kept local since this page
-      // doesn't need the citizen report-flow logic in app.js.
-      const stats = document.querySelectorAll(".analytics-stat strong[data-count-to]");
-      const animate = (node) => {
-        const target = Number(node.dataset.countTo || 0);
-        const suffix = node.dataset.suffix || "";
-        const duration = 900;
-        const start = performance.now();
-        const step = (now) => {
-          const progress = Math.min(1, (now - start) / duration);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          node.textContent = `${Math.round(target * eased)}${suffix}`;
-          if (progress < 1) requestAnimationFrame(step);
-          else node.textContent = `${target}${suffix}`;
-        };
-        requestAnimationFrame(step);
-      };
-      if (!("IntersectionObserver" in window)) {
-        stats.forEach(animate);
-      } else {
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => { if (entry.isIntersecting) { animate(entry.target); observer.unobserve(entry.target); } });
-        }, { threshold: 0.4 });
-        stats.forEach((node) => observer.observe(node));
+    <script>
+      const API = window.KOINOS_API_BASE || (location.hostname === 'koinos.onrender.com' ? 'https://koinos-api.onrender.com' : '');
+      const esc = v => String(v ?? '').replace(/[&<>\'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+      const set = (id,v) => { const n=document.getElementById(id); if(n)n.textContent=v; };
+      async function load(){
+        if(!API){ set('queue-updated','Demo / API not configured'); return; }
+        try{
+          const [issuesRes,analyticsRes]=await Promise.all([fetch(`${API}/api/issues?radiusKm=100`),fetch(`${API}/api/analytics`)]);
+          const issues=await issuesRes.json(), a=await analyticsRes.json();
+          set('stat-open',Math.max(0,(a.totalReports||0)-(a.resolved||0)));set('stat-critical',a.critical??0);set('stat-progress',a.inProgress??0);set('stat-resolved',a.resolved??0);set('stat-total',a.totalReports??0);set('stat-resolved-month',a.resolved??0);set('stat-rate',`${a.resolutionRate??0}%`);set('stat-supporters',a.supporters??0);set('queue-updated',`Live · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`);
+          const rows=issues.slice(0,8);document.getElementById('queue-list').innerHTML=rows.length?rows.map((i,n)=>`<div class="queue-row"><span class="queue-index">${String(n+1).padStart(2,'0')}</span><div class="queue-title"><b>${esc(i.title)}</b><small>${esc(i.category)} · ${esc(i.locationLabel||'Location pending')}</small></div><strong>${i.priority??0}</strong><span class="queue-status ${i.severity==='high'?'high':'medium'}">${esc(i.status==='in_progress'?'In progress':i.severity==='high'?'High':'Watch')}</span><span class="queue-arrow">→</span></div>`).join(''):'<div class="queue-row"><div class="queue-title"><b>No active issues yet.</b><small>New citizen reports will appear here.</small></div></div>';
+          const cats=a.byCategory||[];const max=Math.max(1,...cats.map(x=>Number(x.count)||0));document.getElementById('category-breakdown').innerHTML=cats.length?cats.slice(0,6).map(x=>`<div><span>${esc(x.category)}</span><b>${Number(x.count)||0}</b><i><em style="width:${Math.round((Number(x.count)||0)/max*100)}%"></em></i></div>`).join(''):'<div><span>No category data yet</span><b>0</b><i><em style="width:0%"></em></i></div>';
+        }catch(e){set('queue-updated','API unavailable');set('queue-list','Unable to load live civic data.');}
       }
+      load();
+      setInterval(load,60000);
     </script>
   </body>
 </html>
