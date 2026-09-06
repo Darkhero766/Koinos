@@ -1,2 +1,56 @@
-/* KOINOS live-map presentation layer */
-.koinos-home-map,.koinos-explore-map,.koinos-location-map{position:absolute;inset:0;width:100%;height:100%;min-height:240px;z-index:1}.koinos-real-map,.koinos-home-map{background:#e9e7df}.koinos-map-status{position:absolute;left:16px;bottom:16px;z-index:900;background:rgba(255,255,255,.94);padding:9px 12px;border-radius:999px;font:600 12px/1.2 Manrope,sans-serif;box-shadow:0 5px 20px rgba(0,0,0,.12);pointer-events:none}.koinos-live-marker{background:transparent!important;border:0!important}.koinos-live-marker span{display:block;width:18px;height:18px;border:4px solid #fff;border-radius:50%;background:#ef4b43;box-shadow:0 2px 10px rgba(0,0,0,.35)}.koinos-live-marker span[data-severity=high]{background:#e53b31}.koinos-live-marker span[data-severity=medium]{background:#f0a000}.koinos-live-marker span[data-severity=low]{background:#3c7cff}.koinos-map-empty{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:24px;background:#f1efe8;font-family:Manrope,sans-serif;z-index:3}.koinos-map-empty strong{font-size:16px}.koinos-map-empty span{margin-top:6px;font-size:12px;opacity:.65}.koinos-location-tools{position:absolute;left:14px;right:14px;top:14px;z-index:1000;display:flex;gap:8px}.koinos-location-tools input{min-width:0;flex:1;border:1px solid rgba(0,0,0,.12);border-radius:14px;padding:12px 14px;background:rgba(255,255,255,.97);font:500 13px Manrope,sans-serif;box-shadow:0 5px 18px rgba(0,0,0,.1)}.koinos-location-tools button{border:0;border-radius:14px;padding:10px 13px;background:#20211e;color:#fff;font:700 12px Manrope,sans-serif;white-space:nowrap}.koinos-location-results{position:absolute;left:14px;right:14px;top:62px;z-index:1001;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden}.koinos-location-results button{display:block;width:100%;border:0;border-bottom:1px solid #eee;background:#fff;text-align:left;padding:11px 13px;font:500 12px/1.35 Manrope,sans-serif}.koinos-location-results button:last-child{border-bottom:0}.koinos-location-help{position:absolute;left:14px;bottom:12px;z-index:1000;margin:0;background:rgba(255,255,255,.94);border-radius:999px;padding:8px 12px;font:600 11px Manrope,sans-serif;box-shadow:0 5px 18px rgba(0,0,0,.1)}
+/* KOINOS — presentation + responsive polish */
+.koinos-home-map,.koinos-explore-map,.koinos-location-map{position:absolute;inset:0;width:100%;height:100%;min-height:240px;z-index:1}
+.koinos-real-map,.koinos-home-map{background:#e9e7df}
+.koinos-map-status{position:absolute;left:16px;bottom:16px;z-index:900;background:rgba(255,255,255,.94);padding:9px 12px;border-radius:999px;font:600 12px/1.2 Manrope,sans-serif;box-shadow:0 5px 20px rgba(0,0,0,.12);pointer-events:none}
+.koinos-live-marker{background:transparent!important;border:0!important}.koinos-live-marker span{display:block;width:18px;height:18px;border:4px solid #fff;border-radius:50%;background:#ef4b43;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+.koinos-live-marker span[data-severity=high]{background:#e53b31}.koinos-live-marker span[data-severity=medium]{background:#f0a000}.koinos-live-marker span[data-severity=low]{background:#3c7cff}
+.koinos-map-empty{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:24px;background:#f1efe8;font-family:Manrope,sans-serif;z-index:3}.koinos-map-empty strong{font-size:16px}.koinos-map-empty span{margin-top:6px;font-size:12px;opacity:.65}
+.koinos-location-tools{position:absolute;left:14px;right:14px;top:14px;z-index:1000;display:flex;gap:8px}.koinos-location-tools input{min-width:0;flex:1;border:1px solid rgba(0,0,0,.12);border-radius:14px;padding:12px 14px;background:rgba(255,255,255,.97);font:500 13px Manrope,sans-serif;box-shadow:0 5px 18px rgba(0,0,0,.1)}.koinos-location-tools button{border:0;border-radius:14px;padding:10px 13px;background:#20211e;color:#fff;font:700 12px Manrope,sans-serif;white-space:nowrap}.koinos-location-results{position:absolute;left:14px;right:14px;top:62px;z-index:1001;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden}.koinos-location-results button{display:block;width:100%;border:0;border-bottom:1px solid #eee;background:#fff;text-align:left;padding:11px 13px;font:500 12px/1.35 Manrope,sans-serif}.koinos-location-results button:last-child{border-bottom:0}.koinos-location-help{position:absolute;left:14px;bottom:12px;z-index:1000;margin:0;background:rgba(255,255,255,.94);border-radius:999px;padding:8px 12px;font:600 11px Manrope,sans-serif;box-shadow:0 5px 18px rgba(0,0,0,.1)}
+
+/* Mobile: keep the first viewport focused on the product's core action. */
+@media (max-width:700px){
+  .site-header{height:64px;padding:0 16px}
+  .header-actions .report-trigger{min-height:42px;padding:0 14px;font-size:12px}
+  .hero{padding:34px 18px 20px;gap:16px}
+  .hero-copy{display:flex;flex-direction:column;align-items:flex-start}
+  .hero .eyebrow{margin-bottom:13px;font-size:10px;letter-spacing:.18em}
+  .hero h1{font-size:clamp(3rem,15.2vw,4.6rem);line-height:.84;letter-spacing:-.075em;margin:0}
+  .hero-lede{font-size:15px;line-height:1.42;max-width:315px;margin:16px 0 0}
+  .hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:20px}
+  .hero-actions .button{width:100%;min-height:50px;padding:0 10px;font-size:12px}
+  .hero-note{margin-top:16px;font-size:11px;line-height:1.25}
+  .hero-visual{min-height:230px;height:230px;margin-top:2px;border-radius:18px}
+  .hero-visual .map-topline{font-size:9px;padding:12px}.hero-visual .mono{display:none}
+  .hero-visual .map-marker{transform:scale(.72)}
+  .hero-visual .map-card{transform:scale(.88);transform-origin:left bottom;bottom:10px;left:10px}
+  .hero-visual .map-compass{transform:scale(.8);right:10px;top:48px}
+
+  .section-pad{padding:42px 18px}
+  .section-intro h2{font-size:clamp(2.5rem,11.8vw,4rem);line-height:.9}
+  .pulse{padding-top:38px}
+  .pulse-grid{gap:10px}
+  .pulse-card:not(:first-child){display:none}
+  .pulse-transition{margin-top:28px}
+  .merge-section,.community-section{padding-top:44px;padding-bottom:44px}
+  .priority-section{padding-top:42px}
+
+  /* Report modal: compact, readable, thumb-friendly. */
+  .modal-content{width:min(94vw,520px);max-height:82dvh;border-radius:20px;padding:18px 16px}
+  .modal-content h2,.modal-content h1{font-size:32px;line-height:.95}
+  .report-step{padding-bottom:6px}.report-step h3{font-size:26px;line-height:1.02;margin-bottom:8px}
+  .report-step p{font-size:13px;line-height:1.45}
+  .modal-actions{padding-top:10px;gap:8px}
+  .modal-actions .button{min-height:48px}
+
+  .mobile-nav{height:60px;bottom:10px;left:10px;right:10px;border-radius:18px}
+  .mobile-nav a{min-height:48px;font-size:8px}.mobile-nav a span{font-size:14px}
+}
+
+@media (max-width:380px){
+  .hero{padding-left:14px;padding-right:14px}.section-pad{padding-left:14px;padding-right:14px}
+  .site-header{padding:0 12px}.header-actions .report-trigger{padding:0 11px;font-size:11px}
+  .hero h1{font-size:clamp(2.75rem,15vw,4.2rem)}
+  .hero-actions .button{font-size:11px}
+}
+
+@media (prefers-reduced-motion:reduce){.mobile-nav a{transition:none!important}}
