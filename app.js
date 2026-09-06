@@ -1,13 +1,80 @@
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
+// Load the visual polish layer after the existing stylesheet so the current build stays intact.
+(() => {
+  if (!document.querySelector('link[data-koinos-polish]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/hackathon-polish.css';
+    link.dataset.koinosPolish = 'true';
+    document.head.appendChild(link);
+  }
+})();
+
 const toast = (message) => {
   const node = $("#toast");
+  if (!node) return;
   node.textContent = message;
   node.classList.add("show");
   clearTimeout(window.toastTimer);
   window.toastTimer = setTimeout(() => node.classList.remove("show"), 3200);
 };
+
+// Mobile navigation: simple, thumb-friendly, and always one tap away.
+(() => {
+  if ($('.koinos-mobile-nav')) return;
+  const nav = document.createElement('nav');
+  nav.className = 'koinos-mobile-nav';
+  nav.setAttribute('aria-label', 'Mobile navigation');
+  nav.innerHTML = `
+    <button type="button" data-mobile-target="#top" class="active"><span>⌂</span>Home</button>
+    <button type="button" data-mobile-target="#explore"><span>⌖</span>Map</button>
+    <button type="button" data-mobile-report class="report-nav"><span>＋</span>Report</button>
+    <button type="button" data-mobile-target="#how-it-works"><span>◌</span>How it works</button>
+    <button type="button" data-mobile-target="#impact"><span>↗</span>Impact</button>`;
+  document.body.appendChild(nav);
+  nav.addEventListener('click', (event) => {
+    const button = event.target.closest('button');
+    if (!button) return;
+    if (button.hasAttribute('data-mobile-report')) {
+      const trigger = $('.report-trigger');
+      if (trigger) trigger.click();
+      return;
+    }
+    const target = button.dataset.mobileTarget;
+    if (target) document.querySelector(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    $$('.koinos-mobile-nav button').forEach((item) => item.classList.remove('active'));
+    button.classList.add('active');
+  });
+})();
+
+// Small contextual rail gives the demo a polished, product-like response.
+const demoRail = document.createElement('div');
+demoRail.className = 'koinos-demo-rail';
+demoRail.textContent = 'KOINOS · LIVE CIVIC DEMO';
+document.body.appendChild(demoRail);
+const showDemoRail = () => {
+  demoRail.classList.add('show');
+  clearTimeout(window.demoRailTimer);
+  window.demoRailTimer = setTimeout(() => demoRail.classList.remove('show'), 2200);
+};
+
+// Reveal sections as the visitor scrolls through the story.
+(() => {
+  const targets = $$('.pulse-card, .merge-stage, .stats-strip, .report-callout, .steps-row, .explore-layout, .community-visual, .priority-layout, .proof-section, .health-section, .final-cta');
+  if (!('IntersectionObserver' in window)) return;
+  targets.forEach((node) => node.classList.add('koinos-reveal'));
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  targets.forEach((node) => observer.observe(node));
+})();
 
 // The report flow is intentionally short enough to complete on a phone.
 const modal = $("#report-modal");
@@ -16,53 +83,79 @@ let currentStep = 1;
 const setStep = (step) => {
   currentStep = step;
   steps.forEach((item) => item.classList.toggle("active", Number(item.dataset.step) === step));
-  $("#modal-step").textContent = `0${step} / 04`;
-  $("#modal-progress-bar").style.width = `${step * 25}%`;
+  const modalStep = $("#modal-step");
+  const progress = $("#modal-progress-bar");
+  if (modalStep) modalStep.textContent = `0${step} / 04`;
+  if (progress) progress.style.width = `${step * 25}%`;
   if (step === 4) {
-    $("#ai-loading").style.display = "block";
-    $("#ai-result").classList.remove("show");
-    setTimeout(() => {
-      $("#ai-loading").style.display = "none";
-      $("#ai-result").classList.add("show");
+    const loading = $("#ai-loading");
+    const result = $("#ai-result");
+    if (loading) loading.style.display = "block";
+    if (result) result.classList.remove("show");
+    clearTimeout(window.aiTimer);
+    window.aiTimer = setTimeout(() => {
+      if (loading) loading.style.display = "none";
+      if (result) result.classList.add("show");
+      showDemoRail();
     }, 1800);
   }
 };
 const openModal = () => {
+  if (!modal) return;
   modal.hidden = false;
   document.body.style.overflow = "hidden";
   setStep(1);
-  $("#modal-success").classList.remove("show");
+  $("#modal-success")?.classList.remove("show");
+  setTimeout(() => $("#take-photo")?.focus(), 40);
 };
 const closeModal = () => {
+  if (!modal) return;
   modal.hidden = true;
   document.body.style.overflow = "";
 };
 $$(".report-trigger").forEach((button) => button.addEventListener("click", openModal));
-$(".modal-close").addEventListener("click", closeModal);
-modal.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
+$(".modal-close")?.addEventListener("click", closeModal);
+modal?.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
 $$(".modal-next").forEach((button) => button.addEventListener("click", () => setStep(Math.min(4, currentStep + 1))));
-$("#take-photo").addEventListener("click", () => {
+
+// Use the actual file picker/camera on supported devices, while keeping demo fallback copy.
+const photoUpload = $("#photo-upload");
+if (photoUpload) {
+  photoUpload.setAttribute('accept', 'image/*');
+  photoUpload.setAttribute('capture', 'environment');
+}
+$("#take-photo")?.addEventListener("click", () => {
+  if (photoUpload) {
+    photoUpload.click();
+    return;
+  }
   $("#file-name").textContent = "Photo ready to analyze";
   $("#take-photo").textContent = "Retake photo";
   toast("Photo captured in demo mode.");
 });
-$("#photo-upload").addEventListener("change", (event) => {
-  if (event.target.files?.[0]) $("#file-name").textContent = event.target.files[0].name;
+photoUpload?.addEventListener("change", (event) => {
+  if (event.target.files?.[0]) {
+    $("#file-name").textContent = event.target.files[0].name;
+    $("#take-photo").textContent = "Retake photo";
+    toast("Photo ready. KOINOS can analyze it.");
+  }
 });
 $$("[data-suggestion]").forEach((button) => button.addEventListener("click", () => {
   const input = $("#report-description");
+  if (!input) return;
   input.value = input.value ? `${input.value} ${button.dataset.suggestion}.` : `${button.dataset.suggestion}.`;
   input.focus();
 }));
-$(".join-issue-button").addEventListener("click", () => {
+$(".join-issue-button")?.addEventListener("click", () => {
   $$(".report-step").forEach((item) => item.classList.remove("active"));
-  $("#modal-success").classList.add("show");
+  $("#modal-success")?.classList.add("show");
+  showDemoRail();
 });
-$(".separate-button").addEventListener("click", () => {
+$(".separate-button")?.addEventListener("click", () => {
   toast("Your separate report has been saved for this demo.");
   closeModal();
 });
-$(".close-success").addEventListener("click", closeModal);
+$(".close-success")?.addEventListener("click", closeModal);
 
 // Neighborhood map: markers and list rows share one simple issue state.
 const issueData = {
@@ -74,17 +167,24 @@ const issueData = {
 const selectIssue = (key) => {
   const issue = issueData[key] || issueData.pothole;
   const card = $("#selected-issue");
-  card.querySelector(".issue-tag").textContent = issue.tag;
-  card.querySelector(".issue-tag").className = `issue-tag ${issue.tagClass}`;
-  card.querySelector(".issue-panel-top .mono").textContent = issue.days;
-  card.querySelector("h3").textContent = issue.title;
-  card.querySelector("> p").textContent = issue.location;
+  if (!card) return;
+  const tag = card.querySelector(".issue-tag");
+  if (tag) {
+    tag.textContent = issue.tag;
+    tag.className = `issue-tag ${issue.tagClass}`;
+  }
+  card.querySelector(".issue-panel-top .mono")?.replaceChildren(document.createTextNode(issue.days));
+  card.querySelector("h3")?.replaceChildren(document.createTextNode(issue.title));
+  card.querySelector("> p")?.replaceChildren(document.createTextNode(issue.location));
   const metrics = $$(".issue-metrics strong", card);
-  [issue.affected, issue.priority, issue.reports].forEach((value, index) => { metrics[index].textContent = value; });
+  [issue.affected, issue.priority, issue.reports].forEach((value, index) => { if (metrics[index]) metrics[index].textContent = value; });
   $$(".big-marker").forEach((marker) => marker.classList.toggle("selected", marker.dataset.mapIssue === key));
-  $(".issue-panel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  if (window.innerWidth < 901) $(".issue-panel")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
 };
-$$("[data-map-issue]").forEach((control) => control.addEventListener("click", () => selectIssue(control.dataset.mapIssue)));
+$$("[data-map-issue]").forEach((control) => control.addEventListener("click", () => {
+  selectIssue(control.dataset.mapIssue);
+  showDemoRail();
+}));
 $$(".filter-button").forEach((button) => button.addEventListener("click", () => {
   $$(".filter-button").forEach((item) => item.classList.remove("active"));
   button.classList.add("active");
@@ -93,10 +193,24 @@ $$(".filter-button").forEach((button) => button.addEventListener("click", () => 
   selectIssue(mapKey);
   toast(filter === "all" ? "Showing everything near you." : `Showing ${button.textContent.toLowerCase()} issues.`);
 }));
-$(".issue-detail-button").addEventListener("click", () => toast("Issue story opened — this demo keeps you on the neighborhood map."));
+$(".issue-detail-button")?.addEventListener("click", () => {
+  document.querySelector('.issue-panel')?.classList.add('koinos-detail-focus');
+  toast("Issue story opened — evidence, community, and what happens next.");
+});
+
+// Lightweight map zoom interaction — visual only, with no external map dependency.
+let mapScale = 1;
+$$(".map-zoom button").forEach((button) => button.addEventListener("click", () => {
+  mapScale = Math.max(.88, Math.min(1.18, mapScale + (button.textContent.trim() === '+' ? .08 : -.08)));
+  const surface = $("#big-map");
+  if (surface) surface.style.setProperty('--map-scale', mapScale);
+  surface?.classList.add('zooming');
+  setTimeout(() => surface?.classList.remove('zooming'), 220);
+  toast(mapScale > 1 ? 'Zoomed in.' : mapScale < 1 ? 'Zoomed out.' : 'Map reset.');
+}));
 
 let affected = 47;
-$(".support-button").addEventListener("click", (event) => {
+$(".support-button")?.addEventListener("click", (event) => {
   if (event.currentTarget.dataset.supported) return;
   affected += 1;
   $("#affected-count").textContent = affected;
@@ -108,25 +222,35 @@ $(".support-button").addEventListener("click", (event) => {
 
 const comparison = $(".comparison-slider");
 const updateComparison = () => {
+  if (!comparison) return;
   $(".damaged").style.width = `${comparison.value}%`;
   $(".slider-handle").style.left = `${comparison.value}%`;
 };
-comparison.addEventListener("input", updateComparison);
+comparison?.addEventListener("input", updateComparison);
+updateComparison();
 
 $$(".verify-button").forEach((button) => button.addEventListener("click", () => {
-  $(".verified-message").classList.add("show");
-  $(".proof-actions").style.opacity = ".55";
-  toast(button.classList.contains("verify-button") && button.textContent.includes("resolved") ? "Thanks — the community has verified this repair." : "Thanks — we’ll keep this issue open.");
+  $(".verified-message")?.classList.add("show");
+  if ($(".proof-actions")) $(".proof-actions").style.opacity = ".55";
+  const resolved = button.textContent.toLowerCase().includes("resolved");
+  toast(resolved ? "Thanks — the community has verified this repair." : "Thanks — we’ll keep this issue open.");
 }));
 
-$(".merge-button").addEventListener("click", () => {
-  $(".shared-issue").classList.add("is-merging");
+$(".merge-button")?.addEventListener("click", () => {
+  $(".shared-issue")?.classList.add("is-merging");
   $(".merge-button").innerHTML = "37 reports merged <span>✓</span>";
   toast("37 reports became one shared community issue.");
-  setTimeout(() => $(".shared-issue").classList.remove("is-merging"), 900);
+  showDemoRail();
+  setTimeout(() => $(".shared-issue")?.classList.remove("is-merging"), 900);
 });
 $$("[data-toast]").forEach((button) => button.addEventListener("click", () => toast(button.dataset.toast)));
 
+// Demo button should actually take the judge into the product rather than just showing a toast.
+$(".demo-button")?.addEventListener("click", () => {
+  $("#explore")?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showDemoRail();
+});
+
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && !modal.hidden) closeModal();
+  if (event.key === "Escape" && modal && !modal.hidden) closeModal();
 });
