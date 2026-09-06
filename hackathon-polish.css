@@ -1,0 +1,46 @@
+/* KOINOS — hackathon polish layer. Loaded after styles.css so the existing build remains intact. */
+:root{--k-acid:#d8ed42;--k-paper:#f7f5f0;--k-ink:#171916;--k-muted:#747770;--k-dark:#191c18;--k-line:rgba(23,25,22,.12);--k-shadow:0 24px 70px rgba(20,24,20,.10)}
+body{background:var(--k-paper);text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
+.site-header{position:sticky;top:0;z-index:80;background:rgba(247,245,240,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.wordmark{transition:transform .25s ease}.wordmark:hover{transform:translateY(-1px)}
+.wordmark-mark{box-shadow:0 0 0 1px rgba(23,25,22,.08)}
+.button{min-height:46px}.button:active{transform:translateY(0) scale(.98)}
+.hero{position:relative}.hero:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 80% 18%,rgba(216,237,66,.16),transparent 25%);z-index:-1}
+.hero-visual{box-shadow:var(--k-shadow);border:1px solid rgba(23,25,22,.08)}
+.map-marker,.big-marker{animation:koinos-pulse 3.2s ease-in-out infinite}.marker-two{animation-delay:.8s}.marker-three{animation-delay:1.5s}.big-marker:nth-of-type(2){animation-delay:.4s}.big-marker:nth-of-type(3){animation-delay:1s}.big-marker:nth-of-type(4){animation-delay:1.6s}
+@keyframes koinos-pulse{0%,100%{box-shadow:0 0 0 7px rgba(239,95,79,.12)}50%{box-shadow:0 0 0 13px rgba(239,95,79,.04)}}
+.dark-section{position:relative;overflow:hidden}.dark-section:before{content:"";position:absolute;width:46vw;height:46vw;border:1px solid rgba(255,255,255,.055);border-radius:50%;right:-18vw;top:-20vw;pointer-events:none}.dark-section>*{position:relative;z-index:1}
+.section-intro h2{max-width:100%;text-wrap:balance}.intro-side{text-wrap:pretty}
+.pulse-card,.selected-issue,.priority-card,.score-card,.report-callout{transition:transform .28s ease,box-shadow .28s ease}.pulse-card:hover{transform:translateY(-6px);box-shadow:0 20px 45px rgba(28,31,27,.09)}
+.card-image{filter:saturate(.9)}
+.merge-stage{position:relative}.shared-issue{box-shadow:0 20px 55px rgba(0,0,0,.22)}
+.merge-button{border-bottom:1px solid rgba(244,241,235,.4)}
+.report-callout{box-shadow:var(--k-shadow);border:1px solid var(--k-line)}
+.round-report{box-shadow:0 14px 34px rgba(23,25,22,.16)}.round-report:hover{transform:rotate(-4deg) scale(1.03)}
+.steps-row .step{transition:opacity .25s,transform .25s}.steps-row .step:hover{transform:translateY(-3px)}
+.big-map{box-shadow:var(--k-shadow);border:1px solid rgba(23,25,22,.08)}
+.issue-panel{box-shadow:0 18px 50px rgba(23,25,22,.08)}
+.filter-row{overflow-x:auto;scrollbar-width:none}.filter-row::-webkit-scrollbar{display:none}
+.filter-button{white-space:nowrap}
+.selected-issue{border:1px solid rgba(23,25,22,.08)}.selected-issue:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(23,25,22,.08)}
+.community-visual{min-height:430px}.community-count strong{font-variant-numeric:tabular-nums}
+.support-button[data-supported]{background:#fff;color:var(--k-ink)}
+.priority-card:hover{transform:translateX(5px)}.priority-card.chosen{box-shadow:0 16px 40px rgba(23,25,22,.10)}
+.score-card{border:1px solid rgba(23,25,22,.08);box-shadow:var(--k-shadow)}
+.score-bar span,.score-breakdown em{transition:width 1s cubic-bezier(.22,1,.36,1)}
+/* Make the authority area feel like a deliberate product, not a generic admin panel. */
+.authority-section{background:#e9e6de}
+/* Injected mobile navigation */
+.koinos-mobile-nav{display:none}
+.koinos-mobile-nav button{background:transparent;font-size:10px;font-weight:800;letter-spacing:.04em;color:#777b74;display:flex;flex-direction:column;align-items:center;gap:5px;padding:7px 5px;min-width:58px}.koinos-mobile-nav button span{font-size:19px;line-height:1}.koinos-mobile-nav .active{color:var(--k-ink)}.koinos-mobile-nav .report-nav{background:var(--k-acid);color:var(--k-ink);border-radius:18px;padding:9px 13px;box-shadow:0 8px 22px rgba(23,25,22,.16)}
+/* Injected demo rail */
+.koinos-demo-rail{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:70;background:rgba(23,25,22,.94);color:#fff;padding:9px 12px;border-radius:999px;font:10px "DM Mono",monospace;letter-spacing:.04em;box-shadow:0 14px 36px rgba(0,0,0,.22);transition:opacity .25s,transform .25s}.koinos-demo-rail.show{opacity:1;transform:translate(-50%,0)}
+/* Scroll reveal */
+.koinos-reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1)}.koinos-reveal.is-visible{opacity:1;transform:none}
+@media (max-width:900px){
+  .site-header{height:70px;padding:0 5vw}.desktop-nav,.header-actions .demo-button{display:none}.header-actions{gap:8px}.header-actions .button{padding:12px 15px;font-size:11px}.section-pad{padding:5.5rem 6vw}.hero{grid-template-columns:1fr;gap:2.2rem;padding-top:4.5rem}.hero-visual{min-height:430px}.hero-lede{width:auto;max-width:430px}.pulse-grid{grid-template-columns:1fr 1fr}.pulse-card-tall{grid-row:span 2}.pulse-card:not(.pulse-card-tall){margin-top:0}.split-intro{align-items:start;flex-direction:column;gap:1.3rem}.intro-side{margin:0;max-width:520px}.merge-stage{grid-template-columns:1fr;gap:1.3rem}.merge-arrow{transform:rotate(90deg);justify-self:center}.explore-layout{grid-template-columns:1fr}.big-map{min-height:560px}.issue-panel{min-height:0}.priority-layout{grid-template-columns:1fr}.community-section{grid-template-columns:1fr;gap:3rem}.community-visual{min-height:360px}.koinos-mobile-nav{position:fixed;display:flex;left:10px;right:10px;bottom:10px;z-index:90;justify-content:space-around;align-items:center;background:rgba(247,245,240,.95);border:1px solid rgba(23,25,22,.1);border-radius:22px;padding:6px 4px;box-shadow:0 16px 45px rgba(20,24,20,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}body{padding-bottom:78px}.koinos-demo-rail{bottom:92px}
+}
+@media (max-width:600px){
+  .section-pad{padding:4.5rem 5vw}.site-header{padding:0 4vw}.wordmark{font-size:13px}.header-actions .report-trigger{font-size:10px;padding:11px 12px}.button-plus{font-size:17px}.hero{min-height:auto;padding-top:3.8rem}.hero h1{font-size:clamp(3.65rem,18vw,5.5rem)}.hero-visual{min-height:390px;border-radius:14px}.map-topline .mono{display:none}.map-label{font-size:15px}.pulse-grid{grid-template-columns:1fr}.pulse-card-tall{grid-row:auto}.pulse-card-tall .card-image{min-height:330px}.card-image{min-height:230px}.pulse-transition{margin:4rem 0 0}.pulse-transition .line{display:none}.pulse-transition p{min-width:0}.merge-section{padding-bottom:5rem}.merge-stage{margin-top:3.2rem}.report-stream{width:100%}.person-row{justify-content:center}.shared-issue{padding:16px}.stats-strip{grid-template-columns:1fr 1fr;gap:18px}.report-callout{padding:25px}.report-callout h3{font-size:29px}.steps-row{grid-template-columns:1fr 1fr}.step{padding:15px 0}.big-map{min-height:470px}.map-neighborhood{font-size:14px}.map-zoom{right:12px;bottom:12px}.filter-row{gap:7px}.issue-panel-heading{flex-direction:column;align-items:flex-start;gap:7px}.issue-metrics{gap:10px}.issue-metrics strong{font-size:25px}.community-visual{min-height:320px}.orbit-1{width:260px!important;height:260px!important}.orbit-2{width:190px!important;height:190px!important}.priority-card{padding:15px}.score-number{font-size:72px}.final-cta h2{font-size:clamp(3rem,15vw,5rem)}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.map-marker,.big-marker{animation:none!important}.koinos-reveal{opacity:1;transform:none;transition:none}.pulse-card,.selected-issue,.priority-card,.button{transition:none}}
