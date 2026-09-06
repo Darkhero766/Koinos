@@ -3,20 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="KOINOS authority workspace — review and update civic issues." />
+  <meta name="description" content="KOINOS authority workspace — review civic issues and their status." />
   <title>KOINOS — Authority access</title>
-  <link rel="stylesheet" href="./pages.css?v=20260906-14" />
-  <link rel="stylesheet" href="./hackathon-polish.css?v=20260906-14" />
+  <link rel="stylesheet" href="./pages.css?v=20260906-15" />
+  <link rel="stylesheet" href="./hackathon-polish.css?v=20260906-15" />
   <style>
-    .authority-gate{max-width:720px;margin:7rem auto;padding:3rem;border:1px solid rgba(32,33,31,.12);border-radius:28px;background:#fff}
+    .authority-gate{max-width:720px;margin:5rem auto;padding:3rem;border:1px solid rgba(32,33,31,.12);border-radius:28px;background:#fff;box-shadow:0 24px 70px rgba(32,33,31,.08)}
+    .authority-gate h1{margin-bottom:12px}
+    .demo-login{display:grid;gap:14px;margin-top:28px}
+    .demo-login label{display:grid;gap:7px;font-weight:700}
+    .demo-login input{width:100%;box-sizing:border-box;border:1px solid rgba(32,33,31,.16);border-radius:14px;padding:13px 15px;font:inherit;background:#fafaf6}
+    .demo-credentials{margin-top:18px;padding:15px 16px;border-radius:18px;background:#f3f6e8;border:1px solid rgba(184,255,0,.35)}
+    .demo-credentials code{font-family:'DM Mono',monospace;font-size:13px}
+    .demo-note{font-size:12px;color:#686861;line-height:1.5;margin:9px 0 0}
     .authority-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:center;margin:2rem 0 1rem}
     .authority-toolbar select{border:1px solid rgba(32,33,31,.15);border-radius:999px;padding:10px 16px;background:#fff;font:inherit}
     .authority-list{display:grid;gap:14px}
     .authority-card{display:grid;grid-template-columns:110px 1fr auto;gap:18px;align-items:stretch;padding:16px;border:1px solid rgba(32,33,31,.12);border-radius:22px;background:#fff}
     .authority-card img{width:110px;height:100%;min-height:110px;object-fit:cover;border-radius:15px;background:#ecebe5}
     .authority-card.no-photo{grid-template-columns:1fr auto}.authority-card.no-photo img{display:none}
-    .authority-card h3{margin:4px 0 6px;font-size:20px}.authority-card p{margin:0;color:#686861;line-height:1.5}.authority-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}.authority-pill{display:inline-flex;padding:5px 9px;border-radius:999px;background:#f0efe9;font:12px 'DM Mono',monospace;text-transform:uppercase}.authority-pill.high{background:#ffe1df}.authority-pill.medium{background:#fff0c4}.authority-pill.resolved{background:#dff5e5}.authority-actions{display:flex;flex-direction:column;gap:8px;justify-content:center}.authority-actions button{border:0;border-radius:999px;padding:10px 13px;cursor:pointer;font-weight:700;background:#20211f;color:#fff}.authority-actions button.secondary{background:#eef0e8;color:#20211f}.authority-empty{padding:30px;text-align:center;border:1px dashed rgba(32,33,31,.2);border-radius:22px;color:#686861}
-    @media(max-width:720px){.authority-gate{margin:4rem 1rem;padding:2rem}.authority-card{grid-template-columns:1fr}.authority-card.no-photo{grid-template-columns:1fr}.authority-card img{width:100%;height:180px}.authority-actions{flex-direction:row;flex-wrap:wrap}.authority-toolbar{align-items:flex-start;flex-direction:column}}
+    .authority-card h3{margin:4px 0 6px;font-size:20px}.authority-card p{margin:0;color:#686861;line-height:1.5}.authority-meta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}.authority-pill{display:inline-flex;padding:5px 9px;border-radius:999px;background:#f0efe9;font:12px 'DM Mono',monospace;text-transform:uppercase}.authority-pill.high{background:#ffe1df}.authority-pill.medium{background:#fff0c4}.authority-pill.resolved{background:#dff5e5}.authority-actions{display:flex;flex-direction:column;gap:8px;justify-content:center}.authority-actions button{border:0;border-radius:999px;padding:10px 13px;cursor:pointer;font-weight:700;background:#20211f;color:#fff}.authority-actions button.secondary{background:#eef0e8;color:#20211f}.authority-actions button:disabled{opacity:.5;cursor:not-allowed}.authority-empty{padding:30px;text-align:center;border:1px dashed rgba(32,33,31,.2);border-radius:22px;color:#686861}
+    .demo-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:#eaf8c9;color:#263000;font:12px 'DM Mono',monospace;text-transform:uppercase}
+    .demo-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:#8bb900;box-shadow:0 0 0 4px rgba(139,185,0,.12)}
+    @media(max-width:720px){.authority-gate{margin:3rem 1rem;padding:2rem 1.25rem}.authority-card{grid-template-columns:1fr}.authority-card.no-photo{grid-template-columns:1fr}.authority-card img{width:100%;height:190px}.authority-actions{flex-direction:row;flex-wrap:wrap}.authority-toolbar{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
 <body>
@@ -24,64 +33,142 @@
   <header class="topbar">
     <a class="brand" href="/"><span class="brand-mark">K</span>KOINOS</a>
     <nav class="nav"><a href="/">Home</a><a href="/live.html">Live issues</a><a href="/track.html">Track a report</a></nav>
-    <div class="actions"><span class="mono" data-user-email>Checking access…</span><button class="btn btn-dark" data-signout type="button">Sign out</button></div>
+    <div class="actions"><span class="mono" id="authority-user">Authority demo</span><button class="btn btn-dark" id="authority-signout" type="button">Sign out</button></div>
   </header>
+
   <main class="page" id="authority-app">
     <section class="authority-gate" id="authority-gate">
-      <p class="eyebrow">Authority access</p><h1>City operations<br><em>starts here.</em></h1>
-      <p class="lede" id="gate-message">Checking your KOINOS account and authority role…</p>
-      <a class="btn btn-dark" id="gate-action" href="/auth.html">Sign in to continue</a>
+      <p class="eyebrow">Authority access</p>
+      <h1>City operations<br><em>starts here.</em></h1>
+      <p class="lede">Use the demo authority account to open the civic report queue. It works without creating or promoting a Supabase authority user.</p>
+
+      <form class="demo-login" id="demo-login" autocomplete="off">
+        <label>Demo ID<input id="demo-id" type="email" value="authority@koinos.demo" autocomplete="username" required></label>
+        <label>Password<input id="demo-password" type="password" autocomplete="current-password" required></label>
+        <button class="btn btn-dark" type="submit">Enter authority workspace →</button>
+        <p class="notice" id="login-message" hidden></p>
+      </form>
+
+      <div class="demo-credentials">
+        <strong>Demo credentials</strong><br>
+        ID: <code>authority@koinos.demo</code><br>
+        Password: <code>KOINOS-DEMO-2026</code>
+        <p class="demo-note">This is a public hackathon/demo credential, not a real government account. Replace it with Supabase Auth + role-based access before production.</p>
+      </div>
     </section>
+
     <section id="authority-workspace" hidden>
-      <div class="section-intro"><p class="eyebrow">Authority workspace</p><h1>Problems that need<br><em>attention.</em></h1><p class="lede">Review citizen reports, evidence and locations. Move verified work from reported → in progress → resolved.</p></div>
+      <div class="section-intro">
+        <span class="demo-badge">Demo authority</span>
+        <p class="eyebrow" style="margin-top:14px">Authority workspace</p>
+        <h1>Problems that need<br><em>attention.</em></h1>
+        <p class="lede">Review citizen reports, evidence, locations and current status. In demo mode, status changes are saved locally on this browser so the workflow can be shown without a privileged Supabase account.</p>
+      </div>
       <div class="analytics-grid" style="margin-top:2rem"><div class="analytics-stat"><strong id="count-open">—</strong><span>Open</span></div><div class="analytics-stat"><strong id="count-high">—</strong><span>High severity</span></div><div class="analytics-stat"><strong id="count-progress">—</strong><span>In progress</span></div><div class="analytics-stat"><strong id="count-resolved">—</strong><span>Resolved</span></div></div>
       <div class="authority-toolbar"><div><span class="board-kicker">Live report queue</span><div class="muted" id="updated">Loading…</div></div><select id="filter"><option value="all">All reports</option><option value="reported">Reported</option><option value="in_progress">In progress</option><option value="resolved">Resolved</option><option value="high">High severity</option></select></div>
       <div class="authority-list" id="authority-list"></div>
     </section>
   </main>
 </div>
-<script src="./site-config.js?v=20260906-14"></script>
-<script src="./supabase-config.js?v=20260906-14"></script>
-<script src="./auth.js?v=20260906-14"></script>
-<script src="./civic-db.js?v=20260906-14"></script>
+<script src="./site-config.js?v=20260906-15"></script>
+<script src="./supabase-config.js?v=20260906-15"></script>
+<script src="./auth.js?v=20260906-15"></script>
+<script src="./civic-db.js?v=20260906-15"></script>
 <script>
 (() => {
+  const DEMO_ID = 'authority@koinos.demo';
+  const DEMO_PASSWORD = 'KOINOS-DEMO-2026';
+  const DEMO_KEY = 'koinos-authority-demo-session';
+  const STATUS_KEY = 'koinos-authority-demo-statuses';
   const $ = s => document.querySelector(s);
-  const esc = v => String(v ?? '').replace(/[&<>\'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-  let issues = [];
+  const esc = v => String(v ?? '').replace(/[&<>\'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]));
   const statusLabel = s => s === 'in_progress' ? 'In progress' : s === 'resolved' ? 'Resolved' : 'Reported';
+  let issues = [];
+  let demoStatuses = {};
+
+  const readStatuses = () => { try { return JSON.parse(localStorage.getItem(STATUS_KEY) || '{}') || {}; } catch { return {}; } };
+  const saveStatus = (id, status) => { demoStatuses[String(id)] = status; localStorage.setItem(STATUS_KEY, JSON.stringify(demoStatuses)); };
+  const effectiveStatus = i => demoStatuses[String(i.id)] || i.status || 'reported';
+  const isDemo = () => localStorage.getItem(DEMO_KEY) === '1';
+  const setMessage = (text, error=false) => { const m=$('#login-message'); m.hidden=false; m.textContent=text; m.style.background=error?'#ffe7e4':'#eaf8c9'; };
+
   const render = () => {
     const filter = $('#filter').value;
-    const rows = issues.filter(i => filter==='all' || i.status===filter || (filter==='high' && i.severity==='high'));
-    $('#authority-list').innerHTML = rows.length ? rows.map(i => `
+    const rows = issues.filter(i => {
+      const status = effectiveStatus(i);
+      return filter==='all' || status===filter || (filter==='high' && i.severity==='high');
+    });
+    $('#authority-list').innerHTML = rows.length ? rows.map(i => {
+      const status = effectiveStatus(i);
+      return `
       <article class="authority-card ${i.photoUrl ? '' : 'no-photo'}">
         ${i.photoUrl ? `<img src="${esc(i.photoUrl)}" alt="Evidence for ${esc(i.title)}" loading="lazy">` : ''}
-        <div><div class="authority-meta"><span class="authority-pill ${esc(i.severity)}">${esc(i.severity||'low')}</span><span class="authority-pill ${i.status==='resolved'?'resolved':''}">${esc(statusLabel(i.status))}</span><span class="authority-pill">${Number(i.upvotes)||0} supporters</span></div><h3>${esc(i.title)}</h3><p><strong>${esc(i.category||'Other')}</strong> · ${esc(i.locationLabel||'Location pending')}</p><p style="margin-top:8px">${esc(i.description||'No description provided.')}</p><p class="muted" style="margin-top:8px">Reported ${new Date(i.createdAt||Date.now()).toLocaleString()} · Priority ${Number(i.priority)||0}</p></div>
-        <div class="authority-actions"><button data-status="in_progress" data-id="${esc(i.id)}" ${i.status==='in_progress'?'disabled':''}>Start work</button><button class="secondary" data-status="resolved" data-id="${esc(i.id)}" ${i.status==='resolved'?'disabled':''}>Resolve</button></div>
-      </article>`).join('') : '<div class="authority-empty">No reports match this filter.</div>';
+        <div><div class="authority-meta"><span class="authority-pill ${esc(i.severity)}">${esc(i.severity||'low')}</span><span class="authority-pill ${status==='resolved'?'resolved':''}">${esc(statusLabel(status))}</span><span class="authority-pill">${Number(i.upvotes)||0} supporters</span></div><h3>${esc(i.title)}</h3><p><strong>${esc(i.category||'Other')}</strong> · ${esc(i.locationLabel||'Location pending')}</p><p style="margin-top:8px">${esc(i.description||'No description provided.')}</p><p class="muted" style="margin-top:8px">Reported ${new Date(i.createdAt||Date.now()).toLocaleString()} · Priority ${Number(i.priority)||0}</p></div>
+        <div class="authority-actions"><button data-status="in_progress" data-id="${esc(i.id)}" ${status==='in_progress'?'disabled':''}>Start work</button><button class="secondary" data-status="resolved" data-id="${esc(i.id)}" ${status==='resolved'?'disabled':''}>Resolve</button></div>
+      </article>`;
+    }).join('') : '<div class="authority-empty">No reports match this filter.</div>';
   };
-  const stats = () => { $('#count-open').textContent=issues.filter(i=>i.status!=='resolved').length; $('#count-high').textContent=issues.filter(i=>i.severity==='high'&&i.status!=='resolved').length; $('#count-progress').textContent=issues.filter(i=>i.status==='in_progress').length; $('#count-resolved').textContent=issues.filter(i=>i.status==='resolved').length; };
+
+  const stats = () => {
+    const open=issues.filter(i=>effectiveStatus(i)!=='resolved');
+    $('#count-open').textContent=open.length;
+    $('#count-high').textContent=open.filter(i=>i.severity==='high').length;
+    $('#count-progress').textContent=issues.filter(i=>effectiveStatus(i)==='in_progress').length;
+    $('#count-resolved').textContent=issues.filter(i=>effectiveStatus(i)==='resolved').length;
+  };
+
   async function load(){
-    try { issues = await window.KOINOS_DB.listIssues({radiusKm:100}); stats(); render(); $('#updated').textContent=`Updated ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`; }
-    catch(e){ $('#authority-list').innerHTML=`<div class="authority-empty">Could not load reports: ${esc(e.message||'Unknown error')}</div>`; }
-  }
-  async function boot(){
     try {
-      const client = await window.KOINOS_AUTH_READY;
-      const session = client ? (await client.auth.getSession()).data.session : null;
-      if (!session?.user) { $('#gate-message').textContent='Authority accounts must sign in before opening the operations workspace.'; $('#gate-action').href='/auth.html?next=/authority.html'; return; }
-      const profile = await window.KOINOS_AUTH.getProfile();
-      if (profile?.role !== 'authority') { $('#gate-message').textContent='This account is a citizen account. Ask a KOINOS administrator to promote your account to the authority role.'; $('#gate-action').textContent='Back to account'; $('#gate-action').href='/auth.html'; return; }
-      $('#authority-gate').hidden=true; $('#authority-workspace').hidden=false; await load(); setInterval(load,60000);
-    } catch(e){ $('#gate-message').textContent='Authority access is unavailable until Supabase is configured.'; }
+      issues = await window.KOINOS_DB.listIssues({radiusKm:100});
+      demoStatuses = readStatuses();
+      stats(); render();
+      $('#updated').textContent=`Updated ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · ${issues.length} reports`;
+    } catch(e) {
+      $('#authority-list').innerHTML=`<div class="authority-empty">Could not load reports: ${esc(e.message||'Unknown error')}<br><small>Make sure Supabase is configured and public issue reads are enabled.</small></div>`;
+    }
   }
+
+  function openWorkspace(){
+    $('#authority-gate').hidden=true;
+    $('#authority-workspace').hidden=false;
+    $('#authority-user').textContent='authority@koinos.demo';
+    load();
+  }
+
+  $('#demo-login').addEventListener('submit', e => {
+    e.preventDefault();
+    const id=$('#demo-id').value.trim().toLowerCase(), password=$('#demo-password').value;
+    if(id===DEMO_ID && password===DEMO_PASSWORD){
+      localStorage.setItem(DEMO_KEY,'1');
+      setMessage('Demo authority verified. Opening report queue…');
+      setTimeout(openWorkspace,150);
+    } else setMessage('Incorrect demo ID or password.', true);
+  });
+
   $('#filter').addEventListener('change', render);
   document.addEventListener('click', async e => {
-    const b=e.target.closest('[data-status]'); if(!b)return; b.disabled=true;
-    try { await window.KOINOS_DB.updateIssueStatus(b.dataset.id,b.dataset.status,`Authority updated status to ${statusLabel(b.dataset.status)}`); await load(); }
-    catch(err){ alert(err.message||'Could not update issue.'); b.disabled=false; }
+    const b=e.target.closest?.('[data-status]'); if(!b)return;
+    b.disabled=true;
+    const id=b.dataset.id, status=b.dataset.status;
+    try {
+      if(isDemo()) {
+        saveStatus(id,status);
+        issues = issues.map(i => String(i.id)===String(id) ? {...i,status} : i);
+        stats(); render();
+        $('#updated').textContent=`Status saved locally · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+      } else {
+        await window.KOINOS_DB.updateIssueStatus(id,status,`Authority updated status to ${statusLabel(status)}`);
+        await load();
+      }
+    } catch(err){ alert(err.message||'Could not update issue.'); b.disabled=false; }
   });
-  boot();
+
+  $('#authority-signout').addEventListener('click', async () => {
+    localStorage.removeItem(DEMO_KEY);
+    location.href='/';
+  });
+
+  if(isDemo()) openWorkspace();
 })();
 </script>
 </body>
