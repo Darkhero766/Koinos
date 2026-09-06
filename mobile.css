@@ -50,6 +50,13 @@
   .koinos-demo-rail{bottom:88px;font-size:9px}
   /* Keep fixed navigation from covering content or map controls. */
   #big-map{margin-bottom:8px}
+
+  /* Upload safety: never let a user-selected image break the report modal. */
+  #photo-preview{display:block;width:100%!important;max-width:100%!important;height:auto!important;max-height:180px!important;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin:12px 0 0!important}
+  .report-step img{display:block;max-width:100%;height:auto}
+  .report-step .photo-preview,.report-step .upload-preview,.report-step .image-preview{width:100%;max-width:100%;max-height:180px;object-fit:cover;overflow:hidden;border-radius:16px}
+  .report-step input[type=file]{max-width:100%;overflow:hidden}
+  .report-step .upload-zone{max-width:100%;overflow:hidden}
 }
 @media (max-width:380px){
   .hero{padding-left:14px;padding-right:14px}.section-pad{padding-left:14px;padding-right:14px}.site-header{padding:0 12px}.header-actions .report-trigger{padding:0 11px;font-size:11px}.hero h1{font-size:clamp(2.85rem,15.8vw,4.4rem)}
