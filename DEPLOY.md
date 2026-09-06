@@ -39,7 +39,7 @@ Recommended limit: 12 MB. Allowed MIME types: `image/jpeg`, `image/png`, `image/
 
 Then open Supabase → SQL Editor and run `supabase-storage.sql` from this repository. The app uploads to `issue-images`; older policies for `issue-photos` or `issue-images` with the wrong folder rule will not fix the app.
 
-A public bucket only makes downloads public; uploads still require Storage RLS policies. Supabase also recommends a matching SELECT policy because an upload may need to return object metadata. citeturn6search1turn6search9
+A public bucket only makes downloads public; uploads still require Storage RLS policies. A matching SELECT policy is also useful because Storage may need to return object metadata after an upload.
 
 ## 2. Deploy the database
 
