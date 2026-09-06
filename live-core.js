@@ -1,7 +1,5 @@
 /* KOINOS — live civic layer: OpenStreetMap + PostgreSQL-backed civic data. */
 (() => {
-  // Static HTML is served by Render, so a VITE_* variable is not injected at runtime.
-  // Keep the public API origin explicit here; secrets remain server-side only.
   const API = window.KOINOS_API_BASE || 'https://koinos-api-5v03.onrender.com';
   const $ = (s, r = document) => r.querySelector(s);
   const escapeHtml = value => String(value ?? '').replace(/[&<>\'\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;',"\"":'&quot;'}[c]));
@@ -52,15 +50,14 @@
     const photo=$('#photo-upload');
     if(!photo)return;
     photo.accept='image/*';
-    photo.setAttribute('capture','environment');
+    photo.removeAttribute('capture');
+    photo.removeAttribute('capturemode');
     const label=document.querySelector('label[for="photo-upload"]');
-    // Some mobile browsers are unreliable with labels pointing at hidden file inputs.
-    // Use an explicit click handler as a reliable fallback.
     label?.addEventListener('click',e=>{e.preventDefault();photo.click();});
     photo.addEventListener('change',e=>{
       const file=e.target.files?.[0];
       if(!file)return;
-      if(!file.type.startsWith('image/')){photo.value='';return;}
+      if(!file.type.startsWith('image/')){window.dispatchEvent(new CustomEvent('koinos:error',{detail:{message:'Please choose an image file.'}}));photo.value='';return;}
       if(file.size>4*1024*1024){window.dispatchEvent(new CustomEvent('koinos:error',{detail:{message:'Photo is too large. Please choose an image under 4 MB.'}}));photo.value='';return;}
       const name=$('#file-name');if(name)name.textContent=file.name;
       const take=$('#take-photo');if(take)take.textContent='Change photo';
