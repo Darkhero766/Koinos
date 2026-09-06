@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="KOINOS authority dashboard — what needs attention right now." />
+    <title>KOINOS — Authority dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./hackathon-polish.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="wordmark" href="./index.html" aria-label="KOINOS home"><span class="wordmark-mark">K</span> KOINOS</a>
+        <nav class="desktop-nav" aria-label="Primary navigation">
+          <span class="board-kicker">City operations</span>
+        </nav>
+        <div class="header-actions">
+          <a class="text-button" href="./index.html">Back to citizen view <span>↗</span></a>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="section-pad">
+          <div class="section-intro">
+            <p class="eyebrow">Authority dashboard</p>
+            <h2>What needs<br /><em>attention today.</em></h2>
+          </div>
+
+          <div class="analytics-grid" style="margin-top:2.5rem">
+            <div class="analytics-stat"><strong data-count-to="284">0</strong><span>Open</span></div>
+            <div class="analytics-stat"><strong data-count-to="18">0</strong><span>Critical</span></div>
+            <div class="analytics-stat"><strong data-count-to="76">0</strong><span>In progress</span></div>
+            <div class="analytics-stat"><strong data-count-to="392">0</strong><span>Resolved</span></div>
+          </div>
+
+          <div class="authority-board" style="margin-top:2.5rem">
+            <div class="board-header"><div><span class="board-kicker">City operations / overview</span><h3>What needs attention?</h3></div><span class="board-date">Today, 09:41 AM ↗</span></div>
+            <div class="queue-list">
+              <div class="queue-row"><span class="queue-index">01</span><div class="queue-title"><b>Pothole near a school</b><small>Roads · MG Road</small></div><strong>89</strong><span class="queue-status high">High</span><span class="queue-arrow">→</span></div>
+              <div class="queue-row"><span class="queue-index">02</span><div class="queue-title"><b>Water leak</b><small>Water · 12th Main</small></div><strong>87</strong><span class="queue-status high">High</span><span class="queue-arrow">→</span></div>
+              <div class="queue-row"><span class="queue-index">03</span><div class="queue-title"><b>Broken streetlight</b><small>Electrical · 100 Ft Road</small></div><strong>81</strong><span class="queue-status medium">Watch</span><span class="queue-arrow">→</span></div>
+            </div>
+            <div class="status-timeline"><span class="done">Assigned</span><i></i><span class="current">In progress</span><i></i><span>Resolved</span></div>
+          </div>
+
+          <div class="analytics-board" style="margin-top:2rem" aria-label="Analytics for authorities">
+            <div class="board-header"><div><span class="board-kicker">Analytics</span><h3>This month, at a glance</h3></div><span class="board-date">Auto-generated ↗</span></div>
+            <div class="analytics-grid">
+              <div class="analytics-stat"><strong data-count-to="214">0</strong><span>Total reports</span></div>
+              <div class="analytics-stat"><strong data-count-to="89">0</strong><span>Resolved this month</span></div>
+              <div class="analytics-stat"><strong data-count-to="72" data-suffix="%">0</strong><span>Resolution rate</span></div>
+              <div class="analytics-stat"><strong data-count-to="4" data-suffix=".2d">0</strong><span>Avg. time to fix</span></div>
+            </div>
+            <div class="analytics-breakdown">
+              <div><span>Roads</span><b>96</b><i><em style="width:100%"></em></i></div>
+              <div><span>Water</span><b>54</b><i><em style="width:56%"></em></i></div>
+              <div><span>Waste</span><b>41</b><i><em style="width:43%"></em></i></div>
+              <div><span>Streetlights</span><b>23</b><i><em style="width:24%"></em></i></div>
+            </div>
+            <p class="analytics-note">✦ What KOINOS found: <em>Road damage on MG Road accounts for the largest share of high-severity reports this month; water leak reports are trending up 18% week-over-week near 12th Main.</em></p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer"><div><a class="wordmark" href="./index.html"><span class="wordmark-mark">K</span> KOINOS</a><p>Civic action, made visible.</p></div><span class="footer-copy">© 2026 KOINOS<br />Authority dashboard — connected to the same reports citizens see.</span></footer>
+    </div>
+
+    <script type="module">
+      // Count-up animation for this page's stat cards — kept local since this page
+      // doesn't need the citizen report-flow logic in app.js.
+      const stats = document.querySelectorAll(".analytics-stat strong[data-count-to]");
+      const animate = (node) => {
+        const target = Number(node.dataset.countTo || 0);
+        const suffix = node.dataset.suffix || "";
+        const duration = 900;
+        const start = performance.now();
+        const step = (now) => {
+          const progress = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          node.textContent = `${Math.round(target * eased)}${suffix}`;
+          if (progress < 1) requestAnimationFrame(step);
+          else node.textContent = `${target}${suffix}`;
+        };
+        requestAnimationFrame(step);
+      };
+      if (!("IntersectionObserver" in window)) {
+        stats.forEach(animate);
+      } else {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => { if (entry.isIntersecting) { animate(entry.target); observer.unobserve(entry.target); } });
+        }, { threshold: 0.4 });
+        stats.forEach((node) => observer.observe(node));
+      }
+    </script>
+  </body>
+</html>

@@ -28,25 +28,25 @@ body{background:var(--k-paper);text-rendering:optimizeLegibility;-webkit-font-sm
 .priority-card:hover{transform:translateX(5px)}.priority-card.chosen{box-shadow:0 16px 40px rgba(23,25,22,.10)}
 .score-card{border:1px solid rgba(23,25,22,.08);box-shadow:var(--k-shadow)}
 .score-bar span,.score-breakdown em{transition:width 1s cubic-bezier(.22,1,.36,1)}
-/* Make the authority area feel like a deliberate product, not a generic admin panel. */
+/* Authority-section background retained for the on-page teaser card. */
 .authority-section{background:#e9e6de}
-/* Injected mobile navigation */
-.koinos-mobile-nav{display:none}
-.koinos-mobile-nav button{background:transparent;font-size:10px;font-weight:800;letter-spacing:.04em;color:#777b74;display:flex;flex-direction:column;align-items:center;gap:5px;padding:7px 5px;min-width:58px}.koinos-mobile-nav button span{font-size:19px;line-height:1}.koinos-mobile-nav .active{color:var(--k-ink)}.koinos-mobile-nav .report-nav{background:var(--k-acid);color:var(--k-ink);border-radius:18px;padding:9px 13px;box-shadow:0 8px 22px rgba(23,25,22,.16)}
+.authority-teaser{margin-top:2.5rem;max-width:640px;display:grid;gap:20px}
+.authority-teaser-copy p{color:var(--k-muted);margin-top:8px}
+.authority-teaser .full-button{max-width:340px}
 /* Injected demo rail */
 .koinos-demo-rail{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:70;background:rgba(23,25,22,.94);color:#fff;padding:9px 12px;border-radius:999px;font:10px "DM Mono",monospace;letter-spacing:.04em;box-shadow:0 14px 36px rgba(0,0,0,.22);transition:opacity .25s,transform .25s}.koinos-demo-rail.show{opacity:1;transform:translate(-50%,0)}
 /* Scroll reveal */
 .koinos-reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1)}.koinos-reveal.is-visible{opacity:1;transform:none}
 @media (max-width:900px){
-  .site-header{height:70px;padding:0 5vw}.desktop-nav,.header-actions .demo-button{display:none}.header-actions{gap:8px}.header-actions .button{padding:12px 15px;font-size:11px}.section-pad{padding:5.5rem 6vw}.hero{grid-template-columns:1fr;gap:2.2rem;padding-top:4.5rem}.hero-visual{min-height:430px}.hero-lede{width:auto;max-width:430px}.pulse-grid{grid-template-columns:1fr 1fr}.pulse-card-tall{grid-row:span 2}.pulse-card:not(.pulse-card-tall){margin-top:0}.split-intro{align-items:start;flex-direction:column;gap:1.3rem}.intro-side{margin:0;max-width:520px}.merge-stage{grid-template-columns:1fr;gap:1.3rem}.merge-arrow{transform:rotate(90deg);justify-self:center}.explore-layout{grid-template-columns:1fr}.big-map{min-height:560px}.issue-panel{min-height:0}.priority-layout{grid-template-columns:1fr}.community-section{grid-template-columns:1fr;gap:3rem}.community-visual{min-height:360px}.koinos-mobile-nav{position:fixed;display:flex;left:10px;right:10px;bottom:10px;z-index:90;justify-content:space-around;align-items:center;background:rgba(247,245,240,.95);border:1px solid rgba(23,25,22,.1);border-radius:22px;padding:6px 4px;box-shadow:0 16px 45px rgba(20,24,20,.18);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}body{padding-bottom:78px}.koinos-demo-rail{bottom:92px}
+  .site-header{height:70px;padding:0 5vw}.desktop-nav{display:none}.header-actions{gap:8px}.header-actions .button{padding:12px 15px;font-size:11px}.section-pad{padding:5.5rem 6vw}.hero{grid-template-columns:1fr;gap:2.2rem;padding-top:4.5rem}.hero-visual{min-height:430px}.hero-lede{width:auto;max-width:430px}.pulse-grid{grid-template-columns:1fr 1fr}.pulse-card-tall{grid-row:span 2}.pulse-card:not(.pulse-card-tall){margin-top:0}.split-intro{align-items:start;flex-direction:column;gap:1.3rem}.intro-side{margin:0;max-width:520px}.merge-stage{grid-template-columns:1fr;gap:1.3rem}.merge-arrow{transform:rotate(90deg);justify-self:center}.explore-layout{grid-template-columns:1fr}.big-map{min-height:560px}.issue-panel{min-height:0}.priority-layout{grid-template-columns:1fr}.community-section{grid-template-columns:1fr;gap:3rem}.community-visual{min-height:360px}body{padding-bottom:78px}.koinos-demo-rail{bottom:92px}
 }
 @media (max-width:600px){
   .section-pad{padding:4.5rem 5vw}.site-header{padding:0 4vw}.wordmark{font-size:13px}.header-actions .report-trigger{font-size:10px;padding:11px 12px}.button-plus{font-size:17px}.hero{min-height:auto;padding-top:3.8rem}.hero h1{font-size:clamp(3.65rem,18vw,5.5rem)}.hero-visual{min-height:390px;border-radius:14px}.map-topline .mono{display:none}.map-label{font-size:15px}.pulse-grid{grid-template-columns:1fr}.pulse-card-tall{grid-row:auto}.pulse-card-tall .card-image{min-height:330px}.card-image{min-height:230px}.pulse-transition{margin:4rem 0 0}.pulse-transition .line{display:none}.pulse-transition p{min-width:0}.merge-section{padding-bottom:5rem}.merge-stage{margin-top:3.2rem}.report-stream{width:100%}.person-row{justify-content:center}.shared-issue{padding:16px}.stats-strip{grid-template-columns:1fr 1fr;gap:18px}.report-callout{padding:25px}.report-callout h3{font-size:29px}.steps-row{grid-template-columns:1fr 1fr}.step{padding:15px 0}.big-map{min-height:470px}.map-neighborhood{font-size:14px}.map-zoom{right:12px;bottom:12px}.filter-row{gap:7px}.issue-panel-heading{flex-direction:column;align-items:flex-start;gap:7px}.issue-metrics{gap:10px}.issue-metrics strong{font-size:25px}.community-visual{min-height:320px}.orbit-1{width:260px!important;height:260px!important}.orbit-2{width:190px!important;height:190px!important}.priority-card{padding:15px}.score-number{font-size:72px}.final-cta h2{font-size:clamp(3rem,15vw,5rem)}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.map-marker,.big-marker{animation:none!important}.koinos-reveal{opacity:1;transform:none;transition:none}.pulse-card,.selected-issue,.priority-card,.button{transition:none}}
 
-/* Quick-report QR */
-.qr-trigger{display:inline-flex;align-items:center;gap:6px}
+/* Quick-report QR: a secondary link inside the report flow, not primary navigation */
+.qr-trigger{display:block;margin:14px auto 0;font-size:12px;color:var(--k-muted);text-decoration:underline;text-underline-offset:3px}
 .qr-modal{background:var(--k-paper);border-radius:20px;max-width:420px;width:92vw;margin:auto;padding:34px 30px;text-align:center;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.28)}
 .qr-modal .modal-close{position:absolute;top:14px;right:16px}
 .qr-code-frame{background:#fff;border:1px solid var(--k-line);border-radius:14px;padding:16px;display:inline-flex;margin:18px 0}

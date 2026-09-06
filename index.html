@@ -21,8 +21,6 @@
           <a href="#impact">Impact</a>
         </nav>
         <div class="header-actions">
-          <button class="text-button demo-button" type="button" data-toast="Demo mode is ready — explore the neighborhood below.">Explore demo <span>↗</span></button>
-          <button class="text-button qr-trigger" type="button" aria-haspopup="dialog"><span class="button-plus">▦</span> Quick report (QR)</button>
           <button class="button button-dark report-trigger" type="button"><span class="button-plus">+</span> Report an issue</button>
         </div>
       </header>
@@ -147,22 +145,10 @@
 
         <section class="authority-section dark-section section-pad">
           <div class="section-intro split-intro"><div><p class="eyebrow eyebrow-light">07 / Act</p><h2>From community voice<br /><em>to action.</em></h2></div><p class="intro-side">The right issue reaches the right people, with the evidence to move it forward.</p></div>
-          <div class="authority-board"><div class="board-header"><div><span class="board-kicker">City operations / overview</span><h3>What needs attention?</h3></div><span class="board-date">Today, 09:41 AM ↗</span></div><div class="queue-list"><div class="queue-row"><span class="queue-index">01</span><div class="queue-title"><b>Large pothole</b><small>Roads · MG Road</small></div><strong>89</strong><span class="queue-status high">High</span><span class="queue-arrow">→</span></div><div class="queue-row"><span class="queue-index">02</span><div class="queue-title"><b>Water leak</b><small>Water · 12th Main</small></div><strong>87</strong><span class="queue-status high">High</span><span class="queue-arrow">→</span></div><div class="queue-row"><span class="queue-index">03</span><div class="queue-title"><b>Broken streetlight</b><small>Electrical · 100 Ft Road</small></div><strong>81</strong><span class="queue-status medium">Watch</span><span class="queue-arrow">→</span></div></div><div class="status-timeline"><span class="done">Assigned</span><i></i><span class="current">In progress</span><i></i><span>Resolved</span></div></div>
-          <div class="analytics-board" aria-label="Analytics for authorities">
-            <div class="board-header"><div><span class="board-kicker">Analytics for authorities</span><h3>This month, at a glance</h3></div><span class="board-date">Auto-generated ↗</span></div>
-            <div class="analytics-grid">
-              <div class="analytics-stat"><strong data-count-to="214">0</strong><span>Total reports</span></div>
-              <div class="analytics-stat"><strong data-count-to="89">0</strong><span>Resolved</span></div>
-              <div class="analytics-stat"><strong data-count-to="72" data-suffix="%">0</strong><span>Resolution rate</span></div>
-              <div class="analytics-stat"><strong data-count-to="4" data-suffix=".2d">0</strong><span>Avg. time to fix</span></div>
-            </div>
-            <div class="analytics-breakdown">
-              <div><span>Roads</span><b>96</b><i><em style="width:100%"></em></i></div>
-              <div><span>Water</span><b>54</b><i><em style="width:56%"></em></i></div>
-              <div><span>Waste</span><b>41</b><i><em style="width:43%"></em></i></div>
-              <div><span>Streetlights</span><b>23</b><i><em style="width:24%"></em></i></div>
-            </div>
-            <p class="analytics-note">✦ AI-generated summary: <em>Road damage on MG Road accounts for the largest share of high-severity reports this month; water leak reports are trending up 18% week-over-week near 12th Main.</em></p>
+          <div class="authority-teaser">
+            <div class="authority-teaser-copy"><span class="issue-tag tag-red">High priority</span><h3>Large pothole → assigned to City Roads</h3><p>KOINOS routes the highest-priority issues straight to the team that owns them, with every report and photo attached as evidence.</p></div>
+            <div class="status-timeline"><span class="done">Assigned</span><i></i><span class="current">In progress</span><i></i><span>Resolved</span></div>
+            <a class="button button-outline-light full-button" href="./authority.html">Open the authority dashboard <span>↗</span></a>
           </div>
         </section>
 
@@ -177,7 +163,7 @@
       </main>
 
       <footer class="site-footer"><div><a class="wordmark" href="#top"><span class="wordmark-mark">K</span> KOINOS</a><p>Civic action, made visible.</p></div><div class="footer-links"><div><b>Product</b><a href="#how-it-works">How it works</a><a href="#explore">Map</a><a href="#report">Report</a><a href="#impact">Impact</a></div><div><b>Community</b><a href="#top">About</a><a href="#top">Privacy</a><a href="#top">Accessibility</a></div></div><span class="footer-copy">© 2026 KOINOS<br />Built for better places.</span></footer>
-      <nav class="mobile-nav" aria-label="Mobile navigation"><a href="#top" class="active"><span>⌂</span>Home</a><a href="#explore"><span>⌖</span>Map</a><button class="mobile-report report-trigger" type="button"><span>+</span>Report</button><a href="#how-it-works"><span>◌</span>Activity</a><a href="#impact"><span>◯</span>Profile</a></nav>
+      <nav class="mobile-nav" aria-label="Mobile navigation"><a href="#top" class="active"><span>⌂</span>Home</a><a href="#explore"><span>⌖</span>Map</a><button class="mobile-report report-trigger" type="button"><span>+</span>Report</button><a href="#how-it-works"><span>◌</span>Activity</a></nav>
     </div>
 
     <div class="modal-backdrop" id="report-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
@@ -185,7 +171,7 @@
         <button class="modal-close" type="button" aria-label="Close report flow">×</button>
         <div class="modal-progress"><span id="modal-progress-bar"></span></div>
         <div class="modal-header"><span class="mono" id="modal-step">01 / 04</span><span class="modal-save">Demo mode · no account needed</span></div>
-        <div class="report-step active" data-step="1"><p class="eyebrow">Start with what you saw</p><h2 id="modal-title">What did you see?</h2><p class="modal-subtitle">A photo helps KOINOS understand the issue faster.</p><div class="upload-drop"><div class="camera-icon">⌁</div><h3 id="file-name">Show us the problem</h3><p>Take a photo or choose one from your phone.</p><div><button class="button button-dark" type="button" id="take-photo">Take a photo</button><label class="button button-outline" for="photo-upload">Upload photo</label><input id="photo-upload" type="file" accept="image/*" hidden /></div></div><button class="modal-next button button-accent" type="button">Continue <span>→</span></button></div>
+        <div class="report-step active" data-step="1"><p class="eyebrow">Start with what you saw</p><h2 id="modal-title">What did you see?</h2><p class="modal-subtitle">A photo helps KOINOS understand the issue faster.</p><div class="upload-drop"><div class="camera-icon">⌁</div><h3 id="file-name">Show us the problem</h3><p>Take a photo or choose one from your phone.</p><div><button class="button button-dark" type="button" id="take-photo">Take a photo</button><label class="button button-outline" for="photo-upload">Upload photo</label><input id="photo-upload" type="file" accept="image/*" hidden /></div></div><button class="text-button qr-trigger" type="button" aria-haspopup="dialog">Prefer a QR code? <span>↗</span></button><button class="modal-next button button-accent" type="button">Continue <span>→</span></button></div>
         <div class="report-step" data-step="2"><p class="eyebrow">Step 02 / Location</p><h2>Where is it?</h2><p class="modal-subtitle">We found a spot near you. Move the pin if needed.</p><div class="mini-map"><div class="mini-map-lines"></div><div class="mini-pin">!</div><span>Near MG Road</span></div><div class="location-confirm"><span>⌖</span><div><strong>MG Road, Indiranagar</strong><small>Near 12th Main · Bengaluru</small></div><button type="button" aria-label="Edit location">Edit</button></div><button class="modal-next button button-accent" type="button">That’s the spot <span>→</span></button></div>
         <div class="report-step" data-step="3"><p class="eyebrow">Step 03 / Details</p><h2>Anything we should know?</h2><p class="modal-subtitle">Keep it simple. A sentence is enough.</p><textarea id="report-description" rows="4" placeholder="E.g. Cars have to swerve around it..."></textarea><div class="suggestion-row"><button type="button" data-suggestion="It is blocking the road">Blocking the road</button><button type="button" data-suggestion="It feels unsafe at night">Feels unsafe</button><button type="button" data-suggestion="It has been here for days">Here for days</button></div><label class="anon-toggle"><input type="checkbox" id="anonymous-toggle" /><span class="anon-toggle-track"><span class="anon-toggle-thumb"></span></span><span class="anon-toggle-copy"><b>Report anonymously</b><small>Your name won't be shown to other neighbors or authorities.</small></span></label><button class="modal-next button button-accent" type="button">Continue <span>→</span></button></div>
         <div class="report-step" data-step="4"><p class="eyebrow">Step 04 / KOINOS finds the signal</p><h2>Let’s connect the dots.</h2><p class="modal-subtitle">We’ll check nearby reports and find the right path forward.</p><div class="ai-loading" id="ai-loading"><div class="ai-orb"><span>✦</span></div><div class="ai-lines"><p><span class="ai-check">✓</span> Reading your photo <b>Done</b></p><p><span class="ai-spinner"></span> Checking nearby reports <b>Finding...</b></p><p><span class="ai-pending">○</span> Estimating impact <b>Next</b></p></div></div><div class="ai-result" id="ai-result"><div class="result-icon">✓</div><span class="issue-tag tag-red">What KOINOS found</span><h3>Road damage detected</h3><strong>High severity</strong><div class="result-stats"><span><b>7</b> similar reports nearby</span><span><b>47</b> people may be affected</span></div><p>We found an existing community issue.</p><button class="button button-accent join-issue-button" type="button">Join this issue <span>→</span></button><button class="button button-text separate-button" type="button">Report separately</button></div></div>

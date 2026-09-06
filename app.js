@@ -21,32 +21,18 @@ const toast = (message) => {
   window.toastTimer = setTimeout(() => node.classList.remove("show"), 3200);
 };
 
-// Mobile navigation: simple, thumb-friendly, and always one tap away.
+// Mobile navigation lives once in index.html (.mobile-nav) — highlight the active section on scroll.
 (() => {
-  if ($('.koinos-mobile-nav')) return;
-  const nav = document.createElement('nav');
-  nav.className = 'koinos-mobile-nav';
-  nav.setAttribute('aria-label', 'Mobile navigation');
-  nav.innerHTML = `
-    <button type="button" data-mobile-target="#top" class="active"><span>⌂</span>Home</button>
-    <button type="button" data-mobile-target="#explore"><span>⌖</span>Map</button>
-    <button type="button" data-mobile-report class="report-nav"><span>＋</span>Report</button>
-    <button type="button" data-mobile-target="#how-it-works"><span>◌</span>How it works</button>
-    <button type="button" data-mobile-target="#impact"><span>↗</span>Impact</button>`;
-  document.body.appendChild(nav);
-  nav.addEventListener('click', (event) => {
-    const button = event.target.closest('button');
-    if (!button) return;
-    if (button.hasAttribute('data-mobile-report')) {
-      const trigger = $('.report-trigger');
-      if (trigger) trigger.click();
-      return;
-    }
-    const target = button.dataset.mobileTarget;
-    if (target) document.querySelector(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    $$('.koinos-mobile-nav button').forEach((item) => item.classList.remove('active'));
-    button.classList.add('active');
-  });
+  const nav = $('.mobile-nav');
+  if (!nav) return;
+  const links = $$('.mobile-nav a[href^="#"]', nav);
+  if (!('IntersectionObserver' in window) || !links.length) return;
+  const sections = links.map((link) => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+  const setActive = (id) => links.forEach((link) => link.classList.toggle('active', link.getAttribute('href') === `#${id}`));
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => { if (entry.isIntersecting) setActive(entry.target.id); });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  sections.forEach((section) => observer.observe(section));
 })();
 
 // Small contextual rail gives the demo a polished, product-like response.
@@ -245,12 +231,6 @@ $(".merge-button")?.addEventListener("click", () => {
 });
 $$("[data-toast]").forEach((button) => button.addEventListener("click", () => toast(button.dataset.toast)));
 
-// Demo button should actually take the judge into the product rather than just showing a toast.
-$(".demo-button")?.addEventListener("click", () => {
-  $("#explore")?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  showDemoRail();
-});
-
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && modal && !modal.hidden) closeModal();
 });
@@ -305,33 +285,6 @@ $$(".modal-next, .join-issue-button").forEach((button) => button.addEventListene
     ? "Your anonymous report joined 37 others. KOINOS will keep the thread posted without sharing who reported it."
     : successCopyDefault;
 }));
-
-// Analytics dashboard: numbers count up once they're on screen, like a real reporting dashboard.
-(() => {
-  const stats = $$(".analytics-stat strong[data-count-to]");
-  if (!stats.length) return;
-  const animate = (node) => {
-    const target = Number(node.dataset.countTo || 0);
-    const suffix = node.dataset.suffix || "";
-    const duration = 900;
-    const start = performance.now();
-    const step = (now) => {
-      const progress = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      node.textContent = `${Math.round(target * eased)}${suffix}`;
-      if (progress < 1) requestAnimationFrame(step);
-      else node.textContent = `${target}${suffix}`;
-    };
-    requestAnimationFrame(step);
-  };
-  if (!('IntersectionObserver' in window)) { stats.forEach(animate); return; }
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) { animate(entry.target); observer.unobserve(entry.target); }
-    });
-  }, { threshold: 0.4 });
-  stats.forEach((node) => observer.observe(node));
-})();
 
 // Optional backend integration: if a KOINOS API is configured, mirror new reports to it.
 // The demo works fully offline without this — see /server for the reference Express API.
