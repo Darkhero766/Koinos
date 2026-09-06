@@ -28,6 +28,15 @@
     if (!id) { id = crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`; localStorage.setItem('koinos-device-id', id); }
     return id;
   };
+  const trackedIds = () => {
+    try { return JSON.parse(localStorage.getItem('koinos-tracked-report-ids') || '[]').filter(Boolean).map(String).slice(-100); }
+    catch { return []; }
+  };
+  const rememberReport = id => {
+    if (!id) return;
+    const next = [...new Set([...trackedIds(), String(id)])].slice(-100);
+    localStorage.setItem('koinos-tracked-report-ids', JSON.stringify(next));
+  };
   async function createIssue(input) {
     const c = await client();
     if (!c) throw new Error('Supabase is not configured.');
@@ -46,6 +55,10 @@
     };
     const { data, error } = await c.from('issues').insert(row).select('*').single();
     if (error) throw error;
+    // Keep a device-local receipt for BOTH anonymous and account-linked reports.
+    // This is what makes an anonymous submission trackable on the same device
+    // without attaching the report to a user account.
+    rememberReport(data.id);
     try { await c.from('issue_events').insert({ issue_id: row.id, status: 'reported', note: 'Report received' }); } catch {}
     return normalize(data);
   }
@@ -67,11 +80,26 @@
   }
   async function listMine() {
     const c = await client(); if (!c) throw new Error('Supabase is not configured.');
-    const user = (await c.auth.getUser()).data?.user;
-    if (!user) return [];
-    const { data, error } = await c.from('issues').select('*').eq('owner_user_id', user.id).order('created_at', {ascending:false}).limit(200);
-    if (error) throw error;
-    return (data || []).map(normalize);
+    const user = (await c.auth.getUser()).data?.user || null;
+    const ids = trackedIds();
+    const results = new Map();
+
+    // Signed-in reports are the authoritative account history.
+    if (user) {
+      const { data, error } = await c.from('issues').select('*').eq('owner_user_id', user.id).order('created_at', {ascending:false}).limit(200);
+      if (error) throw error;
+      (data || []).map(normalize).forEach(x => results.set(String(x.id), x));
+    }
+
+    // Anonymous reports (and reports made before sign-in) are recovered from
+    // the device-local receipt list. The reports table is already public-read
+    // in this demo, so this requires no extra Supabase policy or migration.
+    if (ids.length) {
+      const { data, error } = await c.from('issues').select('*').in('id', ids);
+      if (!error) (data || []).map(normalize).forEach(x => results.set(String(x.id), x));
+    }
+
+    return [...results.values()].sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   }
   async function upvote(id) {
     const c = await client(); if (!c) throw new Error('Supabase is not configured.');
@@ -80,5 +108,5 @@
     if (!data) throw new Error('Issue not found.');
     return typeof data === 'string' ? JSON.parse(data) : data;
   }
-  window.KOINOS_DB = { client, createIssue, listIssues, listMine, upvote, normalize };
+  window.KOINOS_DB = { client, createIssue, listIssues, listMine, upvote, normalize, trackedIds };
 })();
