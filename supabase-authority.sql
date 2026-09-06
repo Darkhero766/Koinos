@@ -7,7 +7,7 @@
 insert into public.profiles (id, display_name, role)
 select id, coalesce(raw_user_meta_data ->> 'display_name', split_part(email, '@', 1)), 'authority'
 from auth.users
-where id = 'REPLACE-WITH-AUTHORITY-USER-UUID'
+where id = 'cce72e73-0835-4c56-84f5-ba0688edc5e5'
 on conflict (id) do update set role = 'authority', updated_at = now();
 
 -- Verify:
