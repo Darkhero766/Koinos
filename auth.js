@@ -26,8 +26,6 @@
     if (initPromise) return initPromise;
     initPromise = (async () => {
       if (!window.supabase) await load('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
-      // Use Supabase's normal per-project browser key so an already signed-in
-      // KOINOS user is not silently logged out when moving between pages.
       const projectRef = new URL(c.url).hostname.split('.')[0];
       const storageKey = `sb-${projectRef}-auth-token`;
       client = window.supabase.createClient(c.url, c.anonKey, {
@@ -45,6 +43,15 @@
         getSession: () => client.auth.getSession(),
         getUser: async () => (await client.auth.getUser()).data?.user || null,
         getAccessToken: async () => (await client.auth.getSession()).data?.session?.access_token || null,
+        getProfile: async () => {
+          const user = (await client.auth.getUser()).data?.user;
+          if (!user) return null;
+          const { data, error } = await client.from('profiles').select('id,display_name,role').eq('id', user.id).maybeSingle();
+          if (error) return null;
+          return data || null;
+        },
+        getRole: async () => (await window.KOINOS_AUTH.getProfile())?.role || 'citizen',
+        isAuthority: async () => (await window.KOINOS_AUTH.getRole()) === 'authority',
       };
       return client;
     })();
@@ -58,12 +65,14 @@
     const emailEl = document.querySelector('[data-user-email]');
     const signInEls = [...document.querySelectorAll('[data-signin]')];
     const signOutEls = [...document.querySelectorAll('[data-signout]')];
+    const authorityEls = [...document.querySelectorAll('[data-authority]')];
     try {
       const c = await window.KOINOS_AUTH_READY;
       if (!c) {
         emailEl && (emailEl.textContent = 'Guest');
         signInEls.forEach(x => x.classList.remove('hidden'));
         signOutEls.forEach(x => x.classList.add('hidden'));
+        authorityEls.forEach(x => x.classList.add('hidden'));
         return;
       }
       const { data: { session } } = await c.auth.getSession();
@@ -71,6 +80,10 @@
       emailEl && (emailEl.textContent = session?.user?.email || 'Guest');
       signInEls.forEach(x => x.classList.toggle('hidden', signedIn));
       signOutEls.forEach(x => x.classList.toggle('hidden', !signedIn));
+      if (signedIn && window.KOINOS_AUTH.getProfile) {
+        const profile = await window.KOINOS_AUTH.getProfile();
+        authorityEls.forEach(x => x.classList.toggle('hidden', profile?.role !== 'authority'));
+      } else authorityEls.forEach(x => x.classList.add('hidden'));
     } catch (e) {
       console.warn('KOINOS auth header:', e);
     }
@@ -80,9 +93,7 @@
     const c = await window.KOINOS_AUTH_READY;
     await updateHeader();
     if (c) {
-      const { data: { subscription } } = c.auth.onAuthStateChange(() => {
-        setTimeout(updateHeader, 0);
-      });
+      const { data: { subscription } } = c.auth.onAuthStateChange(() => setTimeout(updateHeader, 0));
       window.addEventListener('pagehide', () => subscription.unsubscribe(), { once: true });
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') setTimeout(updateHeader, 50);
