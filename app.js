@@ -2,24 +2,24 @@
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 (() => {
   const toast=message=>{const node=$('#toast');if(!node)return;node.textContent=message;node.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>node.classList.remove('show'),2800);};
+  const loadLiveCore=()=>new Promise((resolve,reject)=>{
+    if(window.KOINOS_LIVE?.submitReport)return resolve();
+    const existing=document.querySelector('script[data-koinos-live-core]');
+    if(existing){existing.addEventListener('load',()=>window.KOINOS_LIVE?.submitReport?resolve():reject(new Error('Live service failed to initialize')));existing.addEventListener('error',reject);return;}
+    const script=document.createElement('script');script.src='./live-core.js';script.defer=true;script.dataset.koinosLiveCore='true';script.onload=()=>window.KOINOS_LIVE?.submitReport?resolve():reject(new Error('Live service failed to initialize'));script.onerror=()=>reject(new Error('Could not load live service'));document.head.appendChild(script);
+  });
   const modal=$('#report-modal'),steps=$$('.report-step');let currentStep=1;
   const renderStep=step=>{currentStep=step;steps.forEach(x=>x.classList.toggle('active',Number(x.dataset.step)===step));if($('#modal-step'))$('#modal-step').textContent=`0${step} / 04`;if($('#modal-progress-bar'))$('#modal-progress-bar').style.width=`${step*25}%`;if(step===4){if($('#ai-loading'))$('#ai-loading').style.display='block';$('#ai-result')?.classList.remove('show');clearTimeout(window.__ai);window.__ai=setTimeout(()=>{if($('#ai-loading'))$('#ai-loading').style.display='none';$('#ai-result')?.classList.add('show');},700);}};
   const openReport=()=>{if(!modal)return;modal.hidden=false;document.body.style.overflow='hidden';renderStep(1);};
   const closeReport=()=>{if(!modal)return;modal.hidden=true;document.body.style.overflow='';};
   $$('.report-trigger').forEach(b=>b.addEventListener('click',openReport));$('.modal-close')?.addEventListener('click',closeReport);modal?.addEventListener('click',e=>{if(e.target===modal)closeReport();});
   $$('.modal-next').forEach(b=>b.addEventListener('click',()=>{if(currentStep<4)renderStep(currentStep+1);}));
-  // Photo picker: deliberately do NOT use the capture attribute here. On iOS/Android,
-  // capture="environment" forces the camera and prevents the normal Files/Photos picker.
   const photo=$('#photo-upload');
-  if(photo){
-    photo.accept='image/*';
-    photo.removeAttribute('capture');
-    photo.removeAttribute('capturemode');
-  }
+  if(photo){photo.accept='image/*';photo.removeAttribute('capture');photo.removeAttribute('capturemode');}
   $('#take-photo')?.addEventListener('click',e=>{e.preventDefault();photo?.click();});
   photo?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;if(!f.type.startsWith('image/')){toast('Please choose an image file.');e.target.value='';return;}if(f.size>4*1024*1024){toast('That image is over 4 MB. Please choose a smaller photo.');e.target.value='';return;}if($('#file-name'))$('#file-name').textContent=f.name;if($('#take-photo'))$('#take-photo').textContent='Change photo';});
   $$('[data-suggestion]').forEach(b=>b.addEventListener('click',()=>{const input=$('#report-description');if(!input)return;input.value=`${input.value?input.value+' ':''}${b.dataset.suggestion}.`;input.focus();}));
-  const saveReport=async()=>{if(!window.KOINOS_LIVE?.submitReport){toast('Report service is loading — try again in a moment.');return null;}const result=await window.KOINOS_LIVE.submitReport();if(!result){toast('We could not save the report. Check your connection and try again.');return null;}return result;};
+  const saveReport=async()=>{try{await loadLiveCore();}catch(e){console.error('KOINOS live service bootstrap failed',e);toast('Live report service could not load. Refresh once and try again.');return null;}const result=await window.KOINOS_LIVE.submitReport();if(!result){toast('We could not save the report. Check your connection and try again.');return null;}return result;};
   $('.join-issue-button')?.addEventListener('click',async()=>{const result=await saveReport();if(!result)return;if(result.communityMatch&&result.similarIssues?.length){$$('.report-step').forEach(x=>x.classList.remove('active'));$('#modal-success')?.classList.add('show');toast(`Found ${result.similarIssues.length} nearby report${result.similarIssues.length===1?'':'s'} — your report is now connected.`);}else{$$('.report-step').forEach(x=>x.classList.remove('active'));$('#modal-success')?.classList.add('show');toast('Your report is now part of the community record.');}});
   $('.separate-button')?.addEventListener('click',async()=>{const result=await saveReport();if(result){toast('Report saved to KOINOS.');closeReport();}});$('.close-success')?.addEventListener('click',closeReport);
   $('.support-button')?.addEventListener('click',async e=>{if(e.currentTarget.dataset.supported)return;const issueId=e.currentTarget.dataset.issueId;if(!issueId){toast('Choose an issue on the map first.');return;}const result=await window.KOINOS_LIVE?.upvote(issueId);if(!result){toast('Could not add your support. Try again.');return;}const count=result.upvotes??0;if($('#affected-count'))$('#affected-count').textContent=count;if($('.support-note'))$('.support-note').textContent=`${count} people have confirmed this problem.`;e.currentTarget.dataset.supported='true';e.currentTarget.innerHTML="You're affected too <span>✓</span>";toast('Your voice was added to this community issue.');});
